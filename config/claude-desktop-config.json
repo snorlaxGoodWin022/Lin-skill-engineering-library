@@ -1,0 +1,136 @@
+{
+  "name": "Skill库配置示例",
+  "description": "Claude Desktop Skill库配置文件示例",
+  "version": "1.0.0",
+  "author": "你的名字",
+  "license": "MIT",
+
+  "claude": {
+    "skills": {
+      // 启用本地Skill目录
+      "localSkills": {
+        "enabled": true,
+        "paths": [
+          "${HOME}/.claude/skills",
+          "./.claude/skills",
+          "../.claude/skills"
+        ]
+      },
+
+      // 预加载的Skill文件
+      "preload": [
+        "form-generator.skill.md",
+        "crud-template.skill.md",
+        "code-standard.skill.md",
+        "component-wrapper.skill.md"
+      ],
+
+      // Skill别名配置
+      "aliases": {
+        "form": "form-generator.skill.md",
+        "crud": "crud-template.skill.md",
+        "code": "code-standard.skill.md",
+        "ui": "component-wrapper.skill.md",
+        "standard": "team-standard.skill.md"
+      }
+    },
+
+    // 全局配置
+    "config": {
+      // 默认使用的Skill
+      "defaultSkill": "code-standard.skill.md",
+
+      // 自动识别Skill
+      "autoDetectSkills": true,
+
+      // Skill缓存
+      "skillCache": {
+        "enabled": true,
+        "maxSize": 50,
+        "ttl": 3600
+      },
+
+      // 开发模式
+      "development": {
+        "enabled": false,
+        "watchSkills": true,
+        "reloadOnChange": true,
+        "debug": false
+      }
+    }
+  },
+
+  "projects": {
+    // 项目特定配置示例
+    "react-app": {
+      "description": "React应用项目",
+      "skills": ["form-generator.skill.md", "component-wrapper.skill.md"],
+      "config": {
+        "defaultSkill": "form-generator.skill.md",
+        "autoApply": true
+      }
+    },
+
+    "admin-panel": {
+      "description": "管理后台项目",
+      "skills": ["crud-template.skill.md", "code-standard.skill.md"],
+      "config": {
+        "defaultSkill": "crud-template.skill.md",
+        "autoApply": true
+      }
+    },
+
+    "component-library": {
+      "description": "组件库项目",
+      "skills": ["component-wrapper.skill.md", "code-standard.skill.md"],
+      "config": {
+        "defaultSkill": "component-wrapper.skill.md",
+        "autoApply": true
+      }
+    }
+  },
+
+  // MCP服务器配置
+  "mcp": {
+    "servers": {
+      "skill-manager": {
+        "command": "node",
+        "args": ["${PROJECT_ROOT}/tools/skill-manager.js"],
+        "env": {
+          "NODE_ENV": "development"
+        }
+      }
+    }
+  },
+
+  // 快捷键配置
+  "keybindings": {
+    "skill.form": "Ctrl+Shift+F",
+    "skill.crud": "Ctrl+Shift+C",
+    "skill.code": "Ctrl+Shift+S",
+    "skill.ui": "Ctrl+Shift+U",
+    "skill.reload": "Ctrl+Shift+R"
+  },
+
+  // 使用说明
+  "instructions": [
+    "将此文件复制到 Claude Desktop 配置目录",
+    "根据项目需求修改 skills 配置",
+    "使用快捷键或命令快速切换Skill"
+  ],
+
+  // 示例命令
+  "examples": {
+    "createForm": "使用 form-generator.skill.md 规范创建用户注册表单",
+    "createCRUD": "使用 crud-template.skill.md 规范创建用户管理模块",
+    "checkCode": "使用 code-standard.skill.md 规范检查代码质量",
+    "wrapComponent": "使用 component-wrapper.skill.md 规范封装Ant Design组件"
+  },
+
+  "notes": [
+    "路径中的 ${HOME} 和 ${PROJECT_ROOT} 会被自动替换",
+    "可以创建多个配置文件用于不同项目",
+    "开发模式下Skill文件更改会自动重载",
+    "Skill别名可以简化命令输入"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "name": "skill-library-mcp",
+  "description": "Skill库管理MCP服务器",
+  "version": "1.0.0",
+  "mcp": {
+    "version": "2024-11-05",
+    "config": {
+      "command": "node",
+      "args": ["${SERVER_PATH}/tools/mcp-server.js"],
+      "env": {
+        "NODE_ENV": "production",
+        "SKILLS_DIR": "${SKILLS_DIR:-./.claude/skills}",
+        "TEMPLATES_DIR": "${TEMPLATES_DIR:-./templates}",
+        "LOG_LEVEL": "info"
+      }
+    }
+  },
+
+  "servers": {
+    "skill-manager": {
+      "description": "Skill文件管理服务器",
+      "capabilities": {
+        "tools": ["list_skills", "get_skill", "validate_skill", "create_skill", "search_skills"],
+        "resources": ["skill://*"]
+      },
+      "config": {
+        "command": "node",
+        "args": ["${PROJECT_ROOT}/tools/mcp-skill-manager.js"],
+        "env": {
+          "PORT": 3001,
+          "HOST": "localhost"
+        }
+      }
+    },
+
+    "code-generator": {
+      "description": "代码生成服务器",
+      "capabilities": {
+        "tools": ["generate_form", "generate_crud", "generate_component", "validate_code"],
+        "prompts": ["form_generator", "crud_generator"]
+      },
+      "config": {
+        "command": "node",
+        "args": ["${PROJECT_ROOT}/tools/mcp-code-generator.js"],
+        "env": {
+          "PORT": 3002,
+          "HOST": "localhost"
+        }
+      }
+    },
+
+    "validator": {
+      "description": "代码验证服务器",
+      "capabilities": {
+        "tools": ["validate_typescript", "validate_react", "check_style", "lint_code"]
+      },
+      "config": {
+        "command": "node",
+        "args": ["${PROJECT_ROOT}/tools/mcp-validator.js"],
+        "env": {
+          "PORT": 3003,
+          "HOST": "localhost"
+        }
+      }
+    }
+  },
+
+  "tools": {
+    "list_skills": {
+      "name": "list_skills",
+      "description": "列出所有可用的Skill文件",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Skill分类筛选",
+            "enum": ["all", "form", "crud", "component", "standard", "template"]
+          },
+          "search": {
+            "type": "string",
+            "description": "搜索关键词"
+          }
+        }
+      }
+    },
+
+    "get_skill": {
+      "name": "get_skill",
+      "description": "获取指定Skill文件内容",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Skill文件名（如：form-generator.skill.md）"
+          },
+          "format": {
+            "type": "string",
+            "description": "返回格式",
+            "enum": ["markdown", "json", "html"],
+            "default": "markdown"
+          }
+        },
+        "required": ["name"]
+      }
+    },
+
+    "validate_skill": {
+      "name": "validate_skill",
+      "description": "验证Skill文件格式",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Skill文件路径"
+          },
+          "strict": {
+            "type": "boolean",
+            "description": "是否严格模式",
+            "default": false
+          }
+        },
+        "required": ["path"]
+      }
+    },
+
+    "generate_form": {
+      "name": "generate_form",
+      "description": "根据表单Skill生成表单代码",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "string",
+            "description": "表单模板",
+            "enum": ["login", "register", "profile", "product", "custom"]
+          },
+          "fields": {
+            "type": "array",
+            "description": "表单字段配置",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "label": { "type": "string" },
+                "required": { "type": "boolean" }
+              }
+            }
+          },
+          "output": {
+            "type": "string",
+            "description": "输出格式",
+            "enum": ["typescript", "javascript", "react", "vue"],
+            "default": "typescript"
+          }
+        }
+      }
+    }
+  },
+
+  "resources": {
+    "skill://": {
+      "uri": "skill://{skillName}",
+      "name": "Skill文件",
+      "description": "Skill.md文件资源",
+      "mimeType": "text/markdown"
+    }
+  },
+
+  "installation": {
+    "claude_desktop": {
+      "steps": [
+        "复制此配置文件到 Claude Desktop 配置目录",
+        "重启 Claude Desktop",
+        "在设置中启用MCP服务器",
+        "使用 !mcp 命令测试连接"
+      ]
+    },
+    "vscode": {
+      "steps": [
+        "安装 Claude for VSCode 扩展",
+        "添加此配置到 settings.json",
+        "重启VSCode",
+        "使用命令面板调用MCP工具"
+      ]
+    }
+  },
+
+  "examples": {
+    "usage": [
+      "列出所有Skill: mcp list_skills",
+      "获取表单Skill: mcp get_skill --name form-generator.skill.md",
+      "验证Skill文件: mcp validate_skill --path ./my-skill.skill.md",
+      "生成登录表单: mcp generate_form --template login --output typescript"
+    ]
+  },
+
+  "dependencies": {
+    "required": ["node >= 18.0.0"],
+    "optional": ["typescript", "prettier", "eslint"]
+  },
+
+  "notes": [
+    "此配置为示例文件，需要根据实际项目调整",
+    "${SERVER_PATH}、${PROJECT_ROOT} 等变量会被替换",
+    "可以配置多个MCP服务器用于不同功能",
+    "生产环境需要设置合适的权限和安全性"
+  ]
+}

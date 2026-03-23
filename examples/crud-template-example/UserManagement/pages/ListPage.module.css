@@ -1,0 +1,184 @@
+/* 列表页样式 */
+.listPage {
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* 筛选卡片 */
+.filterCard {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filterToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filterItems {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: 1;
+}
+
+.searchInput {
+  width: 300px;
+}
+
+.filterSelect {
+  width: 150px;
+}
+
+.dateRangePicker {
+  width: 300px;
+}
+
+/* 操作按钮区域 */
+.actionButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.createButton {
+  height: 40px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+}
+
+.createButton:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+  border: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.batchDeleteButton {
+  height: 40px;
+  border-radius: 4px;
+}
+
+/* 表格卡片 */
+.tableCard {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* 表格样式 */
+.tableCard :global(.ant-table) {
+  border-radius: 8px;
+}
+
+.tableCard :global(.ant-table-thead > tr > th) {
+  background-color: #fafafa;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tableCard :global(.ant-table-tbody > tr > td) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tableCard :global(.ant-table-tbody > tr:hover > td) {
+  background-color: #fafafa;
+}
+
+/* 操作按钮 */
+.actionButton {
+  padding: 4px 8px;
+  height: auto;
+  font-size: 12px;
+}
+
+.actionButton:hover {
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+/* 标签样式 */
+:global(.ant-tag) {
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* 分页器样式 */
+.tableCard :global(.ant-pagination) {
+  padding: 16px 24px;
+  background-color: #fff;
+  border-top: 1px solid #f0f0f0;
+  margin: 0 !important;
+}
+
+/* 警告文本 */
+.warningText {
+  color: #ff4d4f;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .listPage {
+    padding: 16px;
+  }
+
+  .filterToolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterItems {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInput,
+  .filterSelect,
+  .dateRangePicker {
+    width: 100%;
+  }
+
+  .actionButtons {
+    width: 100%;
+  }
+
+  .createButton,
+  .batchDeleteButton {
+    width: 100%;
+  }
+
+  .tableCard {
+    overflow-x: auto;
+  }
+}
+
+/* 加载状态 */
+:global(.ant-spin-nested-loading) {
+  min-height: 200px;
+}
+
+/* 空状态 */
+:global(.ant-table-placeholder) {
+  padding: 48px 0;
+}
+
+/* 选中行样式 */
+:global(.ant-table-row-selected) {
+  background-color: #e6f7ff !important;
+}
+
+:global(.ant-table-row-selected:hover) {
+  background-color: #d9f0ff !important;
+}

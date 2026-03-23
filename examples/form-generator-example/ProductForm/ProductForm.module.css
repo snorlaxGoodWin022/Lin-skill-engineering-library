@@ -1,0 +1,149 @@
+/* 产品表单样式 */
+.formCard {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.productForm {
+  padding: 24px;
+}
+
+/* 表单字段间距 */
+.productForm :global(.ant-form-item) {
+  margin-bottom: 24px;
+}
+
+/* 最后一个表单项减少下边距 */
+.productForm :global(.ant-form-item):last-child {
+  margin-bottom: 0;
+}
+
+/* 标签样式 */
+.productForm :global(.ant-form-item-label) {
+  font-weight: 500;
+}
+
+/* 输入框样式 */
+.productForm :global(.ant-input),
+.productForm :global(.ant-input-number),
+.productForm :global(.ant-select-selector),
+.productForm :global(.ant-picker) {
+  border-radius: 4px;
+}
+
+.productForm :global(.ant-input):focus,
+.productForm :global(.ant-input-number):focus,
+.productForm :global(.ant-select-selector):focus,
+.productForm :global(.ant-picker):focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+}
+
+/* 错误状态 */
+.productForm :global(.ant-form-item-has-error) :global(.ant-input),
+.productForm :global(.ant-form-item-has-error) :global(.ant-input-number),
+.productForm :global(.ant-form-item-has-error) :global(.ant-select-selector),
+.productForm :global(.ant-form-item-has-error) :global(.ant-picker) {
+  border-color: #ff4d4f;
+}
+
+.productForm :global(.ant-form-item-has-error) :global(.ant-input):focus,
+.productForm :global(.ant-form-item-has-error) :global(.ant-input-number):focus,
+.productForm :global(.ant-form-item-has-error) :global(.ant-select-selector):focus,
+.productForm :global(.ant-form-item-has-error) :global(.ant-picker):focus {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+}
+
+/* 错误提示文本 */
+.productForm :global(.ant-form-item-explain-error) {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 操作按钮区域 */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+/* 提交按钮 */
+.submitButton {
+  min-width: 120px;
+  height: 40px;
+  font-weight: 500;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: none;
+}
+
+.submitButton:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+  border: none;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(24, 144, 255, 0.2);
+}
+
+/* 重置按钮 */
+.resetButton {
+  min-width: 120px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.resetButton:hover {
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .formCard {
+    margin: 16px;
+    border-radius: 6px;
+  }
+
+  .productForm {
+    padding: 16px;
+  }
+
+  .productForm :global(.ant-form-item) {
+    margin-bottom: 20px;
+  }
+
+  .formActions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .submitButton,
+  .resetButton {
+    width: 100%;
+  }
+}
+
+/* 加载状态 */
+.productForm :global(.ant-btn-loading) {
+  opacity: 0.8;
+}
+
+/* 禁用状态 */
+.productForm :global(.ant-input[disabled]),
+.productForm :global(.ant-input-number-disabled),
+.productForm :global(.ant-select-disabled .ant-select-selector),
+.productForm :global(.ant-picker-disabled) {
+  background-color: #f5f5f5;
+  color: rgba(0, 0, 0, 0.25);
+  cursor: not-allowed;
+}
