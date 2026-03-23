@@ -71,6 +71,7 @@ temp/
 # 用户自定义Skill目录（不要提交个人配置）
 .user-skills/
 .local-config/
+.claude/session/
 
 # MCP服务器运行文件
 *.pid
