@@ -1,7 +1,6 @@
 // lib/skill-loader.ts
 import fs from 'fs'
 import path from 'path'
-import matter from 'gray-matter'
 import type { Skill, SkillMeta } from '@/types/skill'
 
 const SKILLS_DIR = path.join(process.cwd(), '..', '.claude', 'skills')
@@ -87,7 +86,7 @@ function extractDescription(content: string): string {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
     if (line && !line.startsWith('#') && !line.startsWith('```')) {
-      return line.slice(0, 100) + (line.length > 100 ? '...' : '')
+      return line.slice(0, 150) + (line.length > 150 ? '...' : '')
     }
   }
   return ''
@@ -100,17 +99,20 @@ export function getSkill(filename: string): Skill | null {
   try {
     const dir = getSkillsDir()
     const filePath = path.join(dir, filename)
-    const fileContent = fs.readFileSync(filePath, 'utf-8')
+    const content = fs.readFileSync(filePath, 'utf-8')
 
-    const { content } = matter(fileContent)
+    const framework = parseFramework(filename)
+    const category = parseCategory(filename)
+    const title = extractTitle(content, filename)
+    const description = extractDescription(content)
 
     return {
       filename,
       meta: {
-        title: extractTitle(content, filename),
-        description: extractDescription(content),
-        framework: parseFramework(filename),
-        category: parseCategory(filename),
+        title,
+        description,
+        framework,
+        category,
       },
       content,
       path: filePath,

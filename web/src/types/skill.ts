@@ -5,7 +5,6 @@ export interface SkillMeta {
   description: string
   framework: 'react' | 'vue3' | 'common'
   category: string
-  tags?: string[]
 }
 
 export interface Skill {
@@ -13,12 +12,6 @@ export interface Skill {
   meta: SkillMeta
   content: string
   path: string
-}
-
-export interface SkillCategory {
-  name: string
-  label: string
-  skills: Skill[]
 }
 
 export const FRAMEWORK_LABELS: Record<string, string> = {
@@ -45,4 +38,5 @@ export const CATEGORY_LABELS: Record<string, string> = {
   router: '路由',
   utils: '工具',
   types: '类型',
+  other: '其他',
 }
