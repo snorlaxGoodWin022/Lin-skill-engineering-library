@@ -14,9 +14,27 @@ interface Props {
 export default function MonacoEditor({ value, onChange, readOnly = false }: Props) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
 
-  const handleMount: OnMount = (editor) => {
+  const handleMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
+    // 检测暗黑模式
+    const darkMode = document.documentElement.classList.contains('dark')
+    monaco.editor.setTheme(darkMode ? 'vs-dark' : 'vs')
   }
+
+  // 监听暗黑模式变化
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (editorRef.current) {
+        const darkMode = document.documentElement.classList.contains('dark')
+        const monaco = (window as any).monaco
+        if (monaco?.editor) {
+          monaco.editor.setTheme(darkMode ? 'vs-dark' : 'vs')
+        }
+      }
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <Editor
@@ -34,7 +52,6 @@ export default function MonacoEditor({ value, onChange, readOnly = false }: Prop
         scrollBeyondLastLine: false,
         padding: { top: 16, bottom: 16 },
       }}
-      theme="vs"
     />
   )
 }
