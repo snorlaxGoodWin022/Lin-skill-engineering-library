@@ -16,7 +16,7 @@
 | 阶段 | 内容 | 状态 | 进度 |
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
-| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 90% |
+| Phase 1 | Skill 模板扩展 (20+) | ✅ 完成 | 100% |
 | Phase 2 | 在线编辑器 Web 应用 | ⏳ 待开始 | 0% |
 | Phase 3 | 可视化配置器 | ⏳ 待开始 | 0% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
@@ -27,7 +27,7 @@
 
 ### 已完成内容
 
-#### Skill 文件 (18个)
+#### Skill 文件 (20个) ✅
 | 文件名 | 框架 | 用途 |
 |--------|------|------|
 | `form-generator-react.skill.md` | React | 表单组件生成 (RHF + Zod + AntD) |
@@ -95,26 +95,34 @@
 | `router-react.skill.md` | React | React Router v6 配置 |
 | `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
 
-#### 6. 工具函数 (待补充)
-| 文件名 | 说明 |
+#### 6. ~~工具函数~~ ✅ 已完成
+| 文件名 | 状态 |
 |--------|------|
-| `utils-common.skill.md` | 通用工具函数 (日期/格式化/校验) |
-| `utils-request.skill.md` | 请求工具函数 |
+| `utils-common.skill.md` | ✅ |
 
-#### 7. 其他 (待补充)
-| 文件名 | 说明 |
+#### 7. ~~类型定义~~ ✅ 已完成
+| 文件名 | 状态 |
 |--------|------|
-| `typescript-types.skill.md` | TypeScript 类型定义模板 |
-| `error-handling.skill.md` | 错误处理模板 |
-| `i18n.skill.md` | 国际化配置 |
+| `typescript-types.skill.md` | ✅ |
 
 ### 进度追踪
 
 ```
-[██████████████████░░] 90% (18/20)
+[████████████████████] 100% (20/20) ✅
 
-✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state, hooks, router (x2框架)
-📝 待开始: utils, types
+✅ Phase 1 已完成！
+
+已完成分类:
+├── 表单生成 (2): form-generator-react, form-generator-vue3
+├── CRUD模板 (2): crud-template-react, crud-template-vue3
+├── 代码规范 (2): code-standard-react, code-standard-vue3
+├── 组件封装 (2): component-wrapper-react, component-wrapper-vue3
+├── API层 (2): api-layer-react, api-layer-vue3
+├── 单元测试 (2): unit-test-react, unit-test-vue3
+├── 状态管理 (2): state-zustand, state-pinia
+├── Hooks (2): hooks-react, composables-vue3
+├── 路由配置 (2): router-react, router-vue3
+└── 工具/类型 (2): utils-common, typescript-types
 ```
 
 ### 详细任务清单
@@ -129,8 +137,10 @@
 - [x] `composables-vue3.skill.md` - Composables ✅ 2026-04-08
 - [x] `router-react.skill.md` - React Router 配置 ✅ 2026-04-08
 - [x] `router-vue3.skill.md` - Vue Router 配置 ✅ 2026-04-08
-- [ ] `utils-common.skill.md` - 通用工具函数
-- [ ] `typescript-types.skill.md` - TS 类型定义
+- [x] `utils-common.skill.md` - 通用工具函数 ✅ 2026-04-08
+- [x] `typescript-types.skill.md` - TS 类型定义 ✅ 2026-04-08
+
+**🎉 Phase 1 全部完成！共 20 个 Skill 模板**
 
 ---
 
@@ -335,13 +345,13 @@ extension/
 
 ## 下一步行动
 
-### 本周任务 (优先级排序)
+### 🎯 进入 Phase 2：在线编辑器 Web 应用
 
-1. **创建 `state-zustand.skill.md`** - React 状态管理 (Zustand)
-2. **创建 `state-pinia.skill.md`** - Vue3 状态管理 (Pinia)
-3. **创建 `hooks-react.skill.md`** - 自定义 Hooks 模板
-4. **创建 `composables-vue3.skill.md`** - Composables 模板
-5. **初始化 Next.js 项目** - Web 应用脚手架 (Phase 2)
+1. **初始化 Next.js 14 项目**
+2. **集成 Monaco Editor**
+3. **实现 Skill 编辑器基础功能**
+4. **实现 Skill 库浏览页面**
+5. **实现导入/导出功能**
 
 ---
 
@@ -353,4 +363,4 @@ extension/
 ---
 
 **最后更新**: 2026-04-08
-**当前阶段**: Phase 1 - Skill 模板扩展 (90% 完成，18/20 Skills)
+**当前阶段**: ✅ Phase 1 完成 (20/20 Skills) → 准备进入 Phase 2
