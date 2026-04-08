@@ -17,7 +17,7 @@
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
 | Phase 1 | Skill 模板扩展 (20+) | ✅ 完成 | 100% |
-| Phase 2 | 在线编辑器 Web 应用 | ⏳ 待开始 | 0% |
+| Phase 2 | 在线编辑器 Web 应用 | 🔄 进行中 | 50% |
 | Phase 3 | 可视化配置器 | ⏳ 待开始 | 0% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
 
@@ -179,46 +179,59 @@ tech-stack/
 ### 目录结构
 
 ```
-web/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx                 # 首页
-│   ├── editor/
-│   │   └── page.tsx             # Skill 编辑器
-│   ├── library/
-│   │   └── page.tsx             # Skill 库浏览
-│   └── preview/
-│       └── page.tsx             # Skill 预览
-├── components/
-│   ├── Editor/
-│   │   ├── MonacoWrapper.tsx
-│   │   ├── Toolbar.tsx
-│   │   └── TemplatePicker.tsx
-│   ├── Library/
-│   │   ├── SkillCard.tsx
-│   │   ├── SkillList.tsx
-│   │   └── SearchBar.tsx
-│   └── common/
-│       ├── Header.tsx
-│       ├── Footer.tsx
-│       └── Layout.tsx
-├── lib/
-│   ├── skill-parser.ts          # Skill 文件解析
-│   ├── skill-generator.ts       # Skill 文件生成
-│   └── templates.ts             # 模板数据
-├── store/
-│   └── useSkillStore.ts         # Zustand Store
-└── types/
-    └── skill.ts                 # 类型定义
+skill-library/                   # 单仓库结构
+├── .claude/
+│   └── skills/                  # 20 个 Skill 文件
+│
+├── web/                         # Phase 2: Web 应用
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx             # 首页
+│   │   ├── editor/
+│   │   │   └── page.tsx         # Skill 编辑器
+│   │   ├── library/
+│   │   │   └── page.tsx         # Skill 库浏览
+│   │   └── preview/
+│   │       └── page.tsx         # Skill 预览
+│   ├── components/
+│   │   ├── Editor/
+│   │   │   ├── MonacoWrapper.tsx
+│   │   │   ├── Toolbar.tsx
+│   │   │   └── TemplatePicker.tsx
+│   │   ├── Library/
+│   │   │   ├── SkillCard.tsx
+│   │   │   ├── SkillList.tsx
+│   │   │   └── SearchBar.tsx
+│   │   └── common/
+│   │       ├── Header.tsx
+│   │       ├── Footer.tsx
+│   │       └── Layout.tsx
+│   ├── lib/
+│   │   ├── skill-parser.ts      # Skill 文件解析
+│   │   ├── skill-loader.ts      # 加载 ../.claude/skills/
+│   │   └── templates.ts         # 模板数据
+│   ├── store/
+│   │   └── useSkillStore.ts     # Zustand Store
+│   ├── types/
+│   │   └── skill.ts             # 类型定义
+│   ├── package.json
+│   └── next.config.js
+│
+├── examples/                    # 代码示例
+├── docs/                        # 文档
+├── tools/                       # CLI 工具
+└── README.md
 ```
 
 ### 任务清单
 
-- [ ] 初始化 Next.js 项目
-- [ ] 集成 Monaco Editor
-- [ ] 实现 Skill 编辑器基础功能
-- [ ] 实现 Skill 库浏览页面
-- [ ] 实现导入/导出功能
+- [x] 初始化 Next.js 14 项目 ✅ 2026-04-08
+- [x] 集成 Monaco Editor ✅ 2026-04-08
+- [x] 实现 Skill 加载工具 (lib/skill-loader.ts) ✅
+- [x] 实现首页 (/) ✅
+- [x] 实现 Skill 库浏览页面 (/library) ✅
+- [x] 实现 Skill 编辑器页面 (/editor) ✅
+- [ ] 实现 API 路由优化
 - [ ] 响应式设计适配
 - [ ] 部署到 Vercel
 
