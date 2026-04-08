@@ -16,7 +16,7 @@
 | 阶段 | 内容 | 状态 | 进度 |
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
-| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 80% |
+| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 90% |
 | Phase 2 | 在线编辑器 Web 应用 | ⏳ 待开始 | 0% |
 | Phase 3 | 可视化配置器 | ⏳ 待开始 | 0% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
@@ -27,7 +27,7 @@
 
 ### 已完成内容
 
-#### Skill 文件 (16个)
+#### Skill 文件 (18个)
 | 文件名 | 框架 | 用途 |
 |--------|------|------|
 | `form-generator-react.skill.md` | React | 表单组件生成 (RHF + Zod + AntD) |
@@ -46,6 +46,8 @@
 | `state-pinia.skill.md` | Vue3 | 状态管理 (Pinia) |
 | `hooks-react.skill.md` | React | 自定义 Hooks 模板 |
 | `composables-vue3.skill.md` | Vue3 | Composables 模板 |
+| `router-react.skill.md` | React | React Router v6 配置 |
+| `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
 
 #### 配套资源
 - ✅ `examples/` - 可运行代码示例
@@ -109,10 +111,10 @@
 ### 进度追踪
 
 ```
-[████████████████░░░░] 80% (16/20)
+[██████████████████░░] 90% (18/20)
 
-✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state, hooks (x2框架)
-📝 待开始: router, utils, types
+✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state, hooks, router (x2框架)
+📝 待开始: utils, types
 ```
 
 ### 详细任务清单
@@ -125,8 +127,8 @@
 - [x] `state-pinia.skill.md` - Pinia 状态管理 ✅ 2026-04-08
 - [x] `hooks-react.skill.md` - 自定义 Hooks ✅ 2026-04-08
 - [x] `composables-vue3.skill.md` - Composables ✅ 2026-04-08
-- [ ] `router-react.skill.md` - React Router 配置
-- [ ] `router-vue3.skill.md` - Vue Router 配置
+- [x] `router-react.skill.md` - React Router 配置 ✅ 2026-04-08
+- [x] `router-vue3.skill.md` - Vue Router 配置 ✅ 2026-04-08
 - [ ] `utils-common.skill.md` - 通用工具函数
 - [ ] `typescript-types.skill.md` - TS 类型定义
 
@@ -351,4 +353,4 @@ extension/
 ---
 
 **最后更新**: 2026-04-08
-**当前阶段**: Phase 1 - Skill 模板扩展 (80% 完成，16/20 Skills)
+**当前阶段**: Phase 1 - Skill 模板扩展 (90% 完成，18/20 Skills)
