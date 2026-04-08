@@ -16,7 +16,7 @@
 | 阶段 | 内容 | 状态 | 进度 |
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
-| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 60% |
+| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 70% |
 | Phase 2 | 在线编辑器 Web 应用 | ⏳ 待开始 | 0% |
 | Phase 3 | 可视化配置器 | ⏳ 待开始 | 0% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
@@ -27,7 +27,7 @@
 
 ### 已完成内容
 
-#### Skill 文件 (8个)
+#### Skill 文件 (14个)
 | 文件名 | 框架 | 用途 |
 |--------|------|------|
 | `form-generator-react.skill.md` | React | 表单组件生成 (RHF + Zod + AntD) |
@@ -38,6 +38,12 @@
 | `code-standrad-vue3.skill.md` | Vue3 | 代码规范标准 |
 | `component-wrapper-react.skill.md` | React | UI 组件封装 |
 | `component-wrapper-vue3.skill.md` | Vue3 | UI 组件封装 |
+| `api-layer-react.skill.md` | React | API 层封装 (Axios + React Query) |
+| `api-layer-vue3.skill.md` | Vue3 | API 层封装 (Axios + Vue Query) |
+| `unit-test-react.skill.md` | React | 单元测试 (Jest + Testing Library) |
+| `unit-test-vue3.skill.md` | Vue3 | 单元测试 (Vitest) |
+| `state-zustand.skill.md` | React | 状态管理 (Zustand) |
+| `state-pinia.skill.md` | Vue3 | 状态管理 (Pinia) |
 
 #### 配套资源
 - ✅ `examples/` - 可运行代码示例
@@ -55,43 +61,43 @@
 
 ### 待补充 Skill 列表
 
-#### 1. API 层代码生成 (高优先级)
-| 文件名 | 框架 | 说明 |
+#### 1. ~~API 层代码生成~~ ✅ 已完成
+| 文件名 | 框架 | 状态 |
 |--------|------|------|
-| `api-layer-react.skill.md` | React | Axios/Fetch 封装 + React Query |
-| `api-layer-vue3.skill.md` | Vue3 | Axios 封装 + Vue Query |
+| `api-layer-react.skill.md` | React | ✅ |
+| `api-layer-vue3.skill.md` | Vue3 | ✅ |
 
-#### 2. 单元测试生成 (高优先级)
-| 文件名 | 框架 | 说明 |
+#### 2. ~~单元测试生成~~ ✅ 已完成
+| 文件名 | 框架 | 状态 |
 |--------|------|------|
-| `unit-test-react.skill.md` | React | Jest + React Testing Library |
-| `unit-test-vue3.skill.md` | Vue3 | Vitest + Vue Test Utils |
+| `unit-test-react.skill.md` | React | ✅ |
+| `unit-test-vue3.skill.md` | Vue3 | ✅ |
 
-#### 3. 状态管理
-| 文件名 | 框架 | 说明 |
+#### 3. ~~状态管理~~ ✅ 已完成
+| 文件名 | 框架 | 状态 |
 |--------|------|------|
-| `state-zustand.skill.md` | React | Zustand Store 模板 |
-| `state-pinia.skill.md` | Vue3 | Pinia Store 模板 |
+| `state-zustand.skill.md` | React | ✅ |
+| `state-pinia.skill.md` | Vue3 | ✅ |
 
-#### 4. Hooks / Composables
+#### 4. Hooks / Composables (待补充)
 | 文件名 | 框架 | 说明 |
 |--------|------|------|
 | `hooks-react.skill.md` | React | 自定义 Hooks 模板 |
 | `composables-vue3.skill.md` | Vue3 | Composables 模板 |
 
-#### 5. 路由配置
+#### 5. 路由配置 (待补充)
 | 文件名 | 框架 | 说明 |
 |--------|------|------|
 | `router-react.skill.md` | React | React Router v6 配置 |
 | `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
 
-#### 6. 工具函数
+#### 6. 工具函数 (待补充)
 | 文件名 | 说明 |
 |--------|------|
 | `utils-common.skill.md` | 通用工具函数 (日期/格式化/校验) |
 | `utils-request.skill.md` | 请求工具函数 |
 
-#### 7. 其他
+#### 7. 其他 (待补充)
 | 文件名 | 说明 |
 |--------|------|
 | `typescript-types.skill.md` | TypeScript 类型定义模板 |
@@ -101,10 +107,10 @@
 ### 进度追踪
 
 ```
-[████████████░░░░░░░░] 60% (12/20)
+[██████████████░░░░░░] 70% (14/20)
 
-✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test (x2框架)
-📝 待开始: state, hooks, router, utils, types, error, i18n
+✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state (x2框架)
+📝 待开始: hooks, router, utils, types
 ```
 
 ### 详细任务清单
@@ -113,8 +119,8 @@
 - [x] `api-layer-vue3.skill.md` - API 层生成 (Vue3) ✅ 2026-04-08
 - [x] `unit-test-react.skill.md` - 单元测试 (React) ✅ 2026-04-08
 - [x] `unit-test-vue3.skill.md` - 单元测试 (Vue3) ✅ 2026-04-08
-- [ ] `state-zustand.skill.md` - Zustand 状态管理
-- [ ] `state-pinia.skill.md` - Pinia 状态管理
+- [x] `state-zustand.skill.md` - Zustand 状态管理 ✅ 2026-04-08
+- [x] `state-pinia.skill.md` - Pinia 状态管理 ✅ 2026-04-08
 - [ ] `hooks-react.skill.md` - 自定义 Hooks
 - [ ] `composables-vue3.skill.md` - Composables
 - [ ] `router-react.skill.md` - React Router 配置
@@ -327,11 +333,11 @@ extension/
 
 ### 本周任务 (优先级排序)
 
-1. **创建 `api-layer-react.skill.md`** - API 层代码生成模板
-2. **创建 `api-layer-vue3.skill.md`** - Vue3 版本
-3. **创建 `unit-test-react.skill.md`** - 单元测试模板
-4. **创建 `unit-test-vue3.skill.md`** - Vue3 版本
-5. **初始化 Next.js 项目** - Web 应用脚手架
+1. **创建 `state-zustand.skill.md`** - React 状态管理 (Zustand)
+2. **创建 `state-pinia.skill.md`** - Vue3 状态管理 (Pinia)
+3. **创建 `hooks-react.skill.md`** - 自定义 Hooks 模板
+4. **创建 `composables-vue3.skill.md`** - Composables 模板
+5. **初始化 Next.js 项目** - Web 应用脚手架 (Phase 2)
 
 ---
 
@@ -343,4 +349,4 @@ extension/
 ---
 
 **最后更新**: 2026-04-08
-**当前阶段**: Phase 1 - Skill 模板扩展
+**当前阶段**: Phase 1 - Skill 模板扩展 (70% 完成，14/20 Skills)
