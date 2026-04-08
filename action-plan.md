@@ -16,7 +16,7 @@
 | 阶段 | 内容 | 状态 | 进度 |
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
-| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 70% |
+| Phase 1 | Skill 模板扩展 (20+) | 🔄 进行中 | 80% |
 | Phase 2 | 在线编辑器 Web 应用 | ⏳ 待开始 | 0% |
 | Phase 3 | 可视化配置器 | ⏳ 待开始 | 0% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
@@ -27,7 +27,7 @@
 
 ### 已完成内容
 
-#### Skill 文件 (14个)
+#### Skill 文件 (16个)
 | 文件名 | 框架 | 用途 |
 |--------|------|------|
 | `form-generator-react.skill.md` | React | 表单组件生成 (RHF + Zod + AntD) |
@@ -44,6 +44,8 @@
 | `unit-test-vue3.skill.md` | Vue3 | 单元测试 (Vitest) |
 | `state-zustand.skill.md` | React | 状态管理 (Zustand) |
 | `state-pinia.skill.md` | Vue3 | 状态管理 (Pinia) |
+| `hooks-react.skill.md` | React | 自定义 Hooks 模板 |
+| `composables-vue3.skill.md` | Vue3 | Composables 模板 |
 
 #### 配套资源
 - ✅ `examples/` - 可运行代码示例
@@ -79,11 +81,11 @@
 | `state-zustand.skill.md` | React | ✅ |
 | `state-pinia.skill.md` | Vue3 | ✅ |
 
-#### 4. Hooks / Composables (待补充)
-| 文件名 | 框架 | 说明 |
+#### 4. ~~Hooks / Composables~~ ✅ 已完成
+| 文件名 | 框架 | 状态 |
 |--------|------|------|
-| `hooks-react.skill.md` | React | 自定义 Hooks 模板 |
-| `composables-vue3.skill.md` | Vue3 | Composables 模板 |
+| `hooks-react.skill.md` | React | ✅ |
+| `composables-vue3.skill.md` | Vue3 | ✅ |
 
 #### 5. 路由配置 (待补充)
 | 文件名 | 框架 | 说明 |
@@ -107,10 +109,10 @@
 ### 进度追踪
 
 ```
-[██████████████░░░░░░] 70% (14/20)
+[████████████████░░░░] 80% (16/20)
 
-✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state (x2框架)
-📝 待开始: hooks, router, utils, types
+✅ 已完成: form-generator, crud-template, code-standard, component-wrapper, api-layer, unit-test, state, hooks (x2框架)
+📝 待开始: router, utils, types
 ```
 
 ### 详细任务清单
@@ -121,8 +123,8 @@
 - [x] `unit-test-vue3.skill.md` - 单元测试 (Vue3) ✅ 2026-04-08
 - [x] `state-zustand.skill.md` - Zustand 状态管理 ✅ 2026-04-08
 - [x] `state-pinia.skill.md` - Pinia 状态管理 ✅ 2026-04-08
-- [ ] `hooks-react.skill.md` - 自定义 Hooks
-- [ ] `composables-vue3.skill.md` - Composables
+- [x] `hooks-react.skill.md` - 自定义 Hooks ✅ 2026-04-08
+- [x] `composables-vue3.skill.md` - Composables ✅ 2026-04-08
 - [ ] `router-react.skill.md` - React Router 配置
 - [ ] `router-vue3.skill.md` - Vue Router 配置
 - [ ] `utils-common.skill.md` - 通用工具函数
@@ -349,4 +351,4 @@ extension/
 ---
 
 **最后更新**: 2026-04-08
-**当前阶段**: Phase 1 - Skill 模板扩展 (70% 完成，14/20 Skills)
+**当前阶段**: Phase 1 - Skill 模板扩展 (80% 完成，16/20 Skills)
