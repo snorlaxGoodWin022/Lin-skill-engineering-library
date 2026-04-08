@@ -48,6 +48,8 @@
 | `composables-vue3.skill.md` | Vue3 | Composables 模板 |
 | `router-react.skill.md` | React | React Router v6 配置 |
 | `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
+| `e2e-test-playwright.skill.md` | 通用 | E2E 测试 (Playwright) |
+| `api-test.skill.md` | 通用 | API 测试 |
 
 #### 配套资源
 - ✅ `examples/` - 可运行代码示例
@@ -236,7 +238,11 @@ skill-library/                   # 单仓库结构
 - [x] 添加移动端底部导航 ✅
 - [x] 实现分类浏览卡片 ✅
 - [x] 添加 Skill 统计信息 ✅
-- [x] 响应式设计优化
+- [x] 响应式设计优化 ✅
+- [x] 添加测试配置 ✅
+  - [x] 单元测试 (Vitest)
+  - [x] E2E 测试 (Playwright)
+  - [x] API 测试
 - [ ] 部署到 Vercel
 
 ---
