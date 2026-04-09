@@ -23,6 +23,7 @@
 | Phase 2 | 在线编辑器 Web 应用 | ✅ 完成 | 100% |
 | Phase 3 | 可视化配置器 | ✅ 完成 | 100% |
 | Phase 3.5 | 配置器质量优化 | ✅ 完成 | 100% |
+| Phase 3.6 | 配置器导入功能 | ✅ 完成 | 100% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
 
 ---
@@ -246,6 +247,37 @@ Step 3: 预览与导出 → Monaco Editor 实时预览、复制/下载
 
 ---
 
+## Phase 3.6: 配置器导入功能 ✅
+
+### 功能描述
+支持导入已有 Skill.md 文件，反向解析后自动填充配置器表单。
+
+### 完成内容
+
+1. **解析器模块** (`skill-import-parser.ts`)
+   - 框架检测：H1 标题括号标记、技术栈关键词评分、文件扩展名识别
+   - 模板类型检测：加权评分制（H1 关键词 5 分、内容信号 3-5 分、文件结构 2-3 分）
+   - 配置提取：从 TypeScript 接口代码块提取字段定义、类型特有值提取
+
+2. **导入对话框** (`ImportDialog.tsx`)
+   - 文件上传模式（支持拖拽 + 点击选择）
+   - 粘贴内容模式
+   - 解析结果预览：名称、类型（含置信度）、框架、字段数量、警告
+
+3. **Store 集成**
+   - `importConfig` 原子性批量更新（单次 `set()` 避免中间态）
+   - 根据解析完整度自动跳转到对应步骤
+
+### 任务清单
+
+- [x] 类型定义 (ParsedSkill, ParsedSkillDetected) ✅
+- [x] 解析器模块 (skill-import-parser.ts) ✅
+- [x] Store importConfig 动作 ✅
+- [x] ImportDialog 组件（含拖拽上传） ✅
+- [x] 集成到配置器页面 ✅
+
+---
+
 ## Phase 4: Chrome 插件 ⏳
 
 ### 功能描述
@@ -301,6 +333,7 @@ extension/
 ├── 4月8日: Phase 2 完成 (Web 应用 + 测试 + 部署)
 ├── 4月9日: Phase 3 完成 (可视化配置器)
 ├── 4月9日: Phase 3.5 完成 (配置器质量优化)
+├── 4月9日: Phase 3.6 完成 (配置器导入功能)
 └── 待定: Phase 4 (Chrome 插件)
 ```
 
@@ -322,10 +355,10 @@ extension/
 
 ## 仓库信息
 
-- **GitHub**: `git@github.com:snorlaxGoodWin022/Lin-skill-engineering-library.git`
+- **GitHub**: `git@github.com:snorlaxGoodWin022/Lin-Skills-Template-Library.git`
 - **本地路径**: `D:\CodeProject\Lin_AI_Skill\skill-library`
 
 ---
 
 **最后更新**: 2026-04-09
-**当前阶段**: ✅ Phase 3.5 完成 → 准备进入 Phase 4
+**当前阶段**: ✅ Phase 3.6 完成 → 准备进入 Phase 4
