@@ -10,6 +10,8 @@ import MonacoEditor from '@/components/MonacoEditor'
 import TemplateSelector from '@/components/configurator/TemplateSelector'
 import FrameworkSelector from '@/components/configurator/FrameworkSelector'
 import ConfigForm from '@/components/configurator/ConfigForm'
+import ImportDialog from '@/components/configurator/ImportDialog'
+import type { ParsedSkill } from '@/types/configurator'
 
 export default function ConfiguratorContent() {
   const {
@@ -19,10 +21,12 @@ export default function ConfiguratorContent() {
     values, setFieldValue,
     fields, setFields,
     resetConfig,
+    importConfig,
   } = useConfigStore()
 
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState<'config' | 'preview'>('config')
+  const [showImport, setShowImport] = useState(false)
 
   const schema = templateType ? TEMPLATE_SCHEMAS[templateType] : null
 
@@ -92,6 +96,12 @@ export default function ConfiguratorContent() {
               </div>
             ))}
             <div className="flex-1" />
+            <button
+              onClick={() => setShowImport(true)}
+              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-2"
+            >
+              📥 导入
+            </button>
             {step > 1 && (
               <button
                 onClick={resetConfig}
@@ -195,6 +205,12 @@ export default function ConfiguratorContent() {
           </div>
         </div>
       </div>
+
+      <ImportDialog
+        open={showImport}
+        onClose={() => setShowImport(false)}
+        onImport={(parsed: ParsedSkill) => importConfig(parsed)}
+      />
     </Layout>
   )
 }

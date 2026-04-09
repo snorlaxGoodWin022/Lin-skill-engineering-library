@@ -1,6 +1,6 @@
 // store/configStore.ts
 import { create } from 'zustand'
-import type { TemplateType, FieldDefinition } from '@/types/configurator'
+import type { TemplateType, FieldDefinition, ParsedSkill } from '@/types/configurator'
 
 interface ConfigState {
   step: number
@@ -19,6 +19,7 @@ interface ConfigState {
   setFields: (fields: FieldDefinition[]) => void
 
   resetConfig: () => void
+  importConfig: (parsed: ParsedSkill) => void
 }
 
 const initialState = {
@@ -49,4 +50,19 @@ export const useConfigStore = create<ConfigState>((set) => ({
   setFields: (fields) => set({ fields }),
 
   resetConfig: () => set(initialState),
+
+  importConfig: (parsed) => {
+    const step = parsed.templateType && parsed.framework
+      ? 3
+      : parsed.templateType
+      ? 2
+      : 1
+    set({
+      step,
+      templateType: parsed.templateType,
+      framework: parsed.framework,
+      values: parsed.values,
+      fields: parsed.fields,
+    })
+  },
 }))

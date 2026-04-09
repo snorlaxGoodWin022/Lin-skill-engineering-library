@@ -39,6 +39,21 @@ export interface SkillConfig {
   fields: FieldDefinition[]
 }
 
+export interface ParsedSkillDetected {
+  name: string | null
+  confidence: 'high' | 'medium' | 'low'
+  sections: string[]
+  warnings: string[]
+}
+
+export interface ParsedSkill {
+  templateType: TemplateType | null
+  framework: 'react' | 'vue3' | null
+  values: Record<string, any>
+  fields: FieldDefinition[]
+  detected: ParsedSkillDetected
+}
+
 export const TEMPLATE_LABELS: Record<TemplateType, string> = {
   form: '表单生成器',
   crud: 'CRUD 模板',
