@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skills Template Library - AI 代码生成模板库",
+  title: "Lin Skills Template Library - AI 代码生成模板库",
   description: "面向前端开发者的 Skill.md 模板库，包含 22+ 现成模板、在线编辑器和可视化配置器。支持 React + Vue3 双栈。",
 };
 

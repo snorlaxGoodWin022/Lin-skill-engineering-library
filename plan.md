@@ -2,12 +2,15 @@
 
 ## 项目目标
 
-打造面向前端开发者的 **Skill.md 模板库**，包含 20+ 现成 Skill 模板、在线编辑器和 Chrome 插件。
+打造面向前端开发者的 **Skill.md 模板库**，包含 22 个现成 Skill 模板、在线编辑器、可视化配置器。
 
 ### 技术栈
-- **Web 应用**: Next.js 14 + TypeScript + Monaco Editor
+- **Web 应用**: Next.js 16 + React 19 + TypeScript 5 + Tailwind CSS v4
+- **状态管理**: Zustand 5
+- **编辑器**: Monaco Editor
 - **Skill 库**: React + Vue3 双栈支持
-- **插件**: Chrome Extension
+- **测试**: Vitest (单元测试) + Playwright (E2E 测试)
+- **部署**: Vercel
 
 ---
 
@@ -16,9 +19,10 @@
 | 阶段 | 内容 | 状态 | 进度 |
 |------|------|------|------|
 | Phase 0 | 基础 Skill 库搭建 | ✅ 完成 | 100% |
-| Phase 1 | Skill 模板扩展 (20+) | ✅ 完成 | 100% |
+| Phase 1 | Skill 模板扩展 (22个) | ✅ 完成 | 100% |
 | Phase 2 | 在线编辑器 Web 应用 | ✅ 完成 | 100% |
 | Phase 3 | 可视化配置器 | ✅ 完成 | 100% |
+| Phase 3.5 | 配置器质量优化 | ✅ 完成 | 100% |
 | Phase 4 | Chrome 插件 | ⏳ 待开始 | 0% |
 
 ---
@@ -27,7 +31,8 @@
 
 ### 已完成内容
 
-#### Skill 文件 (20个) ✅
+#### Skill 文件 (22个) ✅
+
 | 文件名 | 框架 | 用途 |
 |--------|------|------|
 | `form-generator-react.skill.md` | React | 表单组件生成 (RHF + Zod + AntD) |
@@ -48,6 +53,8 @@
 | `composables-vue3.skill.md` | Vue3 | Composables 模板 |
 | `router-react.skill.md` | React | React Router v6 配置 |
 | `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
+| `utils-common.skill.md` | 通用 | 通用工具函数 |
+| `typescript-types.skill.md` | 通用 | TypeScript 类型定义 |
 | `e2e-test-playwright.skill.md` | 通用 | E2E 测试 (Playwright) |
 | `api-test.skill.md` | 通用 | API 测试 |
 
@@ -60,61 +67,13 @@
 
 ---
 
-## Phase 1: Skill 模板扩展 🔄
+## Phase 1: Skill 模板扩展 ✅
 
-### 目标
-扩展至 20+ 个 Skill 模板，覆盖前端开发全流程。
-
-### 待补充 Skill 列表
-
-#### 1. ~~API 层代码生成~~ ✅ 已完成
-| 文件名 | 框架 | 状态 |
-|--------|------|------|
-| `api-layer-react.skill.md` | React | ✅ |
-| `api-layer-vue3.skill.md` | Vue3 | ✅ |
-
-#### 2. ~~单元测试生成~~ ✅ 已完成
-| 文件名 | 框架 | 状态 |
-|--------|------|------|
-| `unit-test-react.skill.md` | React | ✅ |
-| `unit-test-vue3.skill.md` | Vue3 | ✅ |
-
-#### 3. ~~状态管理~~ ✅ 已完成
-| 文件名 | 框架 | 状态 |
-|--------|------|------|
-| `state-zustand.skill.md` | React | ✅ |
-| `state-pinia.skill.md` | Vue3 | ✅ |
-
-#### 4. ~~Hooks / Composables~~ ✅ 已完成
-| 文件名 | 框架 | 状态 |
-|--------|------|------|
-| `hooks-react.skill.md` | React | ✅ |
-| `composables-vue3.skill.md` | Vue3 | ✅ |
-
-#### 5. 路由配置 (待补充)
-| 文件名 | 框架 | 说明 |
-|--------|------|------|
-| `router-react.skill.md` | React | React Router v6 配置 |
-| `router-vue3.skill.md` | Vue3 | Vue Router 配置 |
-
-#### 6. ~~工具函数~~ ✅ 已完成
-| 文件名 | 状态 |
-|--------|------|
-| `utils-common.skill.md` | ✅ |
-
-#### 7. ~~类型定义~~ ✅ 已完成
-| 文件名 | 状态 |
-|--------|------|
-| `typescript-types.skill.md` | ✅ |
-
-### 进度追踪
+### 已完成分类
 
 ```
-[████████████████████] 100% (20/20) ✅
+[████████████████████] 100% (22/22) ✅
 
-✅ Phase 1 已完成！
-
-已完成分类:
 ├── 表单生成 (2): form-generator-react, form-generator-vue3
 ├── CRUD模板 (2): crud-template-react, crud-template-vue3
 ├── 代码规范 (2): code-standard-react, code-standard-vue3
@@ -124,7 +83,8 @@
 ├── 状态管理 (2): state-zustand, state-pinia
 ├── Hooks (2): hooks-react, composables-vue3
 ├── 路由配置 (2): router-react, router-vue3
-└── 工具/类型 (2): utils-common, typescript-types
+├── 工具/类型 (2): utils-common, typescript-types
+└── 测试 (2): e2e-test-playwright, api-test
 ```
 
 ### 详细任务清单
@@ -141,93 +101,72 @@
 - [x] `router-vue3.skill.md` - Vue Router 配置 ✅ 2026-04-08
 - [x] `utils-common.skill.md` - 通用工具函数 ✅ 2026-04-08
 - [x] `typescript-types.skill.md` - TS 类型定义 ✅ 2026-04-08
+- [x] `e2e-test-playwright.skill.md` - E2E 测试 ✅ 2026-04-09
+- [x] `api-test.skill.md` - API 测试 ✅ 2026-04-09
 
-**🎉 Phase 1 全部完成！共 20 个 Skill 模板**
+**Phase 1 全部完成！共 22 个 Skill 模板**
 
 ---
 
-## Phase 2: 在线编辑器 Web 应用 ⏳
+## Phase 2: 在线编辑器 Web 应用 ✅
 
 ### 技术方案
 
 ```
 tech-stack/
-├── Next.js 14 (App Router)
+├── Next.js 16 (App Router) + React 19
 ├── TypeScript 5
+├── Tailwind CSS v4
 ├── Monaco Editor (代码编辑器)
-├── Tailwind CSS (样式)
-├── Zustand (状态管理)
-└── next-mdx-remote (Markdown 渲染)
+├── Zustand 5 (状态管理)
+└── highlight.js (Markdown 代码高亮)
 ```
 
 ### 功能模块
 
-#### 2.1 Skill 编辑器
-- Monaco Editor 集成
-- Markdown 语法高亮
-- Skill 模板快速插入
-- 实时预览
+#### 页面结构
 
-#### 2.2 Skill 库浏览
-- 分类展示所有 Skill
-- 搜索/筛选功能
-- 一键复制/下载
+| 路由 | 功能 | 说明 |
+|------|------|------|
+| `/` | 首页 | 项目介绍、统计数据、快速导航 |
+| `/library` | Skill 库 | 分类浏览、搜索筛选、一键复制 |
+| `/editor` | 编辑器 | Monaco Editor 在线编辑、实时预览 |
+| `/configurator` | 配置器 | 可视化生成 Skill（Phase 3） |
+| `/api/skills` | API | Skill 文件列表和内容接口 |
 
-#### 2.3 导入/导出
-- 导出为 .skill.md 文件
-- 导入现有 Skill 文件
-- GitHub 同步 (可选)
-
-### 目录结构
+#### 核心组件
 
 ```
-skill-library/                   # 单仓库结构
-├── .claude/
-│   └── skills/                  # 20 个 Skill 文件
-│
-├── web/                         # Phase 2: Web 应用
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx             # 首页
-│   │   ├── editor/
-│   │   │   └── page.tsx         # Skill 编辑器
-│   │   ├── library/
-│   │   │   └── page.tsx         # Skill 库浏览
-│   │   └── preview/
-│   │       └── page.tsx         # Skill 预览
-│   ├── components/
-│   │   ├── Editor/
-│   │   │   ├── MonacoWrapper.tsx
-│   │   │   ├── Toolbar.tsx
-│   │   │   └── TemplatePicker.tsx
-│   │   ├── Library/
-│   │   │   ├── SkillCard.tsx
-│   │   │   ├── SkillList.tsx
-│   │   │   └── SearchBar.tsx
-│   │   └── common/
-│   │       ├── Header.tsx
-│   │       ├── Footer.tsx
-│   │       └── Layout.tsx
-│   ├── lib/
-│   │   ├── skill-parser.ts      # Skill 文件解析
-│   │   ├── skill-loader.ts      # 加载 ../.claude/skills/
-│   │   └── templates.ts         # 模板数据
-│   ├── store/
-│   │   └── useSkillStore.ts     # Zustand Store
-│   ├── types/
-│   │   └── skill.ts             # 类型定义
-│   ├── package.json
-│   └── next.config.js
-│
-├── examples/                    # 代码示例
-├── docs/                        # 文档
-├── tools/                       # CLI 工具
-└── README.md
+src/
+├── app/
+│   ├── layout.tsx           # 根布局（暗黑模式）
+│   ├── page.tsx             # 首页
+│   ├── editor/page.tsx      # 编辑器
+│   ├── library/page.tsx     # Skill 库
+│   ├── configurator/        # 配置器（Phase 3）
+│   └── api/skills/          # API 路由
+├── components/
+│   ├── Layout.tsx           # 全局布局+导航
+│   ├── MonacoEditor.tsx     # Monaco 编辑器封装
+│   ├── MarkdownRenderer.tsx # Markdown 渲染
+│   ├── SkillCard.tsx        # Skill 卡片
+│   ├── SkillList.tsx        # Skill 列表
+│   └── SearchBar.tsx        # 搜索栏
+├── lib/
+│   ├── skill-loader.ts      # Skill 文件加载
+│   ├── template-generator.ts # 配置器模板生成（7种）
+│   └── template-schemas.ts  # 配置 Schema 定义
+├── store/
+│   ├── skillStore.ts        # Skill 状态管理
+│   └── configStore.ts       # 配置器状态管理
+└── types/
+    ├── skill.ts             # Skill 类型定义
+    └── configurator.ts      # 配置器类型定义
 ```
 
 ### 任务清单
 
-- [x] 初始化 Next.js 14 项目 ✅ 2026-04-08
+- [x] 初始化 Next.js 16 项目 ✅ 2026-04-08
 - [x] 集成 Monaco Editor ✅ 2026-04-08
 - [x] 实现 Skill 加载工具 (lib/skill-loader.ts) ✅
 - [x] 实现首页 (/) ✅
@@ -240,49 +179,37 @@ skill-library/                   # 单仓库结构
 - [x] 添加 Skill 统计信息 ✅
 - [x] 响应式设计优化 ✅
 - [x] 添加测试配置 ✅
-  - [x] 单元测试 (Vitest)
+  - [x] 单元测试 (Vitest, 16 tests passing)
   - [x] E2E 测试 (Playwright)
   - [x] API 测试
 - [x] 部署到 Vercel ✅
 
 ---
 
-## Phase 3: 可视化配置器 ⏳
+## Phase 3: 可视化配置器 ✅
 
 ### 功能描述
-通过表单驱动的界面生成 Skill，无需手写 Markdown。
+通过表单驱动的 3 步向导生成 Skill.md，无需手写 Markdown。
 
 ### 配置流程
 
 ```
-1. 选择模板类型 (表单/CRUD/API/测试...)
-2. 选择技术栈 (React/Vue3)
-3. 配置字段/选项
-4. 预览生成的 Skill
-5. 导出/复制
+Step 1: 选择模板类型 → 表单/CRUD/API/单元测试/Hooks/状态管理/工具函数
+Step 2: 配置字段和选项 → 组件名、描述、字段定义、API路径等
+Step 3: 预览与导出 → Monaco Editor 实时预览、复制/下载
 ```
 
-### 界面设计
+### 支持的模板类型 (7种)
 
-```
-┌─────────────────────────────────────────────────┐
-│  Skill 配置器                                    │
-├─────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌───────────────────────────┐ │
-│  │ 模板类型    │  │ 配置面板                  │ │
-│  │ ○ 表单生成  │  │ ┌─────────────────────┐   │ │
-│  │ ○ CRUD模板  │  │ │ 字段配置            │   │ │
-│  │ ○ API层     │  │ │ + 添加字段          │   │ │
-│  │ ○ 单元测试  │  │ └─────────────────────┘   │ │
-│  │             │  │                           │ │
-│  │ 技术栈      │  │ ┌─────────────────────┐   │ │
-│  │ ☑ React    │  │ │ 预览                │   │ │
-│  │ ☑ Vue3     │  │ │ [生成的Skill内容]   │   │ │
-│  └─────────────┘  │ └─────────────────────┘   │ │
-│                   └───────────────────────────┘ │
-│  [生成 Skill]  [复制]  [下载]                    │
-└─────────────────────────────────────────────────┘
-```
+| 模板类型 | 生成内容 | 支持框架 |
+|---------|---------|---------|
+| 表单生成器 | Zod Schema + 表单组件 + 测试 | React / Vue3 |
+| CRUD 模板 | 类型 + API + Hooks + 页面 | React / Vue3 |
+| API 层封装 | 类型 + API 函数 + Query Hooks | React / Vue3 |
+| 单元测试 | 测试套件 + 测试用例模板 | React / Vue3 |
+| Hooks/Composable | 类型 + Hook 实现 + 测试 | React / Vue3 |
+| 状态管理 | Store 类型 + 实现 + 测试 | React(Zustand) / Vue3(Pinia) |
+| 工具函数 | 类型 + 函数实现 + 测试 | 通用 |
 
 ### 任务清单
 
@@ -291,6 +218,31 @@ skill-library/                   # 单仓库结构
 - [x] 实现配置到 Skill 的转换逻辑 ✅
 - [x] 实现实时预览 ✅
 - [x] 表单校验与错误提示 ✅
+
+---
+
+## Phase 3.5: 配置器质量优化 ✅
+
+### 优化内容
+
+**目标**: 让配置器生成的 Markdown 质量接近手写 Skill 文件水准。
+
+### 完成的优化
+
+1. **模板生成器重构** (`template-generator.ts`)
+   - 7 种模板生成器全部重写，输出完整的 Skill.md 结构
+   - 每种模板包含：使用场景、技术栈、文件结构规范、类型定义、代码模板、测试用例、输出要求、使用示例
+   - 修复嵌套模板字面量语法错误（`generateState` 使用 `sections.push()` 模式）
+   - 修复 TypeScript 隐式 `any` 类型错误
+
+2. **生成的 Skill.md 质量提升**
+   - 表单模板：包含完整的 Zod Schema、React/Vue3 组件模板、测试用例
+   - CRUD 模板：包含类型定义、API 层、Hooks、文件结构规范
+   - API 模板：包含查询/变更 Hooks 分离、缓存策略
+   - 测试模板：根据测试类型生成不同结构（组件/Hook/工具函数）
+   - Hooks 模板：React Hook / Vue3 Composable 双版本
+   - 状态模板：Zustand（含 persist 中间件）/ Pinia 双版本
+   - 工具模板：纯函数模式，包含类型定义和测试
 
 ---
 
@@ -318,23 +270,14 @@ extension/
 ├── manifest.json
 ├── popup/
 │   ├── popup.html
-│   ├── popup.tsx
-│   └── popup.css
+│   └── popup.tsx
 ├── content/
-│   ├── content.ts              # 注入 Claude 页面
-│   └── claude-integration.ts   # Claude DOM 操作
+│   └── content.ts
 ├── background/
-│   └── background.ts           # Service Worker
-├── options/
-│   ├── options.html
-│   └── options.tsx             # 设置页面
+│   └── background.ts
 ├── lib/
-│   ├── skill-manager.ts        # Skill 存储/读取
-│   └── storage.ts              # Chrome Storage 封装
-├── components/
-│   ├── SkillList.tsx
-│   ├── SkillImporter.tsx
-│   └── QuickActions.tsx
+│   ├── skill-manager.ts
+│   └── storage.ts
 └── assets/
     └── icon*.png
 ```
@@ -354,21 +297,18 @@ extension/
 
 ```
 2026 Q2
-├── 4月: Phase 1 完成 (20+ Skills)
-├── 5月: Phase 2 MVP (基础编辑器)
-└── 6月: Phase 2 完成 + Phase 3 开始
-
-2026 Q3
-├── 7月: Phase 3 完成 (可视化配置器)
-├── 8月: Phase 4 MVP (Chrome 插件)
-└── 9月: 项目完整发布
+├── 4月8日: Phase 0-1 完成 (22个 Skills)
+├── 4月8日: Phase 2 完成 (Web 应用 + 测试 + 部署)
+├── 4月9日: Phase 3 完成 (可视化配置器)
+├── 4月9日: Phase 3.5 完成 (配置器质量优化)
+└── 待定: Phase 4 (Chrome 插件)
 ```
 
 ---
 
 ## 下一步行动
 
-### 🎯 Phase 4：Chrome 插件
+### Phase 4：Chrome 插件（待用户确认）
 
 1. 创建 Chrome Extension 项目
 2. 实现 Popup 界面
@@ -387,5 +327,5 @@ extension/
 
 ---
 
-**最后更新**: 2026-04-08
-**当前阶段**: ✅ Phase 3 完成 → 准备进入 Phase 4
+**最后更新**: 2026-04-09
+**当前阶段**: ✅ Phase 3.5 完成 → 准备进入 Phase 4
