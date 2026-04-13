@@ -101,10 +101,13 @@ export const formSchema = z.object({
 
 ### 5. 组件结构模板
 
+> **重要：** Ant Design 组件是受控组件，必须使用 `Controller` 包裹，
+> 不能使用 `register`。`register` 只适用于原生 HTML 表单元素。
+
 ```typescript
 // index.tsx
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, Input, Button, Space } from 'antd';
 import { formSchema } from './schema';
@@ -126,8 +129,8 @@ export default function FormName({
 }: FormNameProps) {
   // 表单实例
   const {
-    register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -142,20 +145,41 @@ export default function FormName({
 
   return (
     <Form layout="vertical">
-      {/* 表单字段按业务逻辑分组 */}
+      {/* 文本字段示例 */}
+      <Form.Item
+        label="用户名"
+        validateStatus={errors.username ? 'error' : ''}
+        help={errors.username?.message}
+      >
+        <Controller
+          name="username"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              placeholder="请输入用户名"
+              disabled={isReadOnly}
+            />
+          )}
+        />
+      </Form.Item>
+
+      {/* 其他表单字段按业务逻辑分组 */}
 
       {/* 操作按钮 */}
       {!isReadOnly && (
-        <Space>
-          <Button
-            type="primary"
-            loading={isSubmitting}
-            onClick={handleSubmit(submitForm)}
-          >
-            {mode === 'create' ? '创建' : '保存'}
-          </Button>
-          <Button onClick={onCancel}>取消</Button>
-        </Space>
+        <Form.Item>
+          <Space>
+            <Button
+              type="primary"
+              loading={isSubmitting}
+              onClick={handleSubmit(submitForm)}
+            >
+              {mode === 'create' ? '创建' : '保存'}
+            </Button>
+            <Button onClick={onCancel}>取消</Button>
+          </Space>
+        </Form.Item>
       )}
     </Form>
   );
@@ -214,7 +238,7 @@ export function useFormSubmit({ mode, onSuccess }: UseFormSubmitProps) {
 当一个字段变化影响其他字段时：
 
 ```typescript
-// 使用watch监听字段变化
+// 使用watch监听字段变化，使用setValue更新联动字段
 const categoryId = watch('categoryId');
 
 useEffect(() => {
@@ -238,7 +262,20 @@ const { fields, append, remove } = useFieldArray({
 // 渲染
 {fields.map((field, index) => (
   <div key={field.id}>
-    <Input {...register(`items.${index}.name`)} />
+    <Controller
+      name={`items.${index}.name`}
+      control={control}
+      render={({ field }) => (
+        <Input {...field} placeholder="请输入项目名称" />
+      )}
+    />
+    <Controller
+      name={`items.${index}.qty`}
+      control={control}
+      render={({ field }) => (
+        <InputNumber {...field} min={1} />
+      )}
+    />
     <Button onClick={() => remove(index)}>删除</Button>
   </div>
 ))}
@@ -251,25 +288,31 @@ const { fields, append, remove } = useFieldArray({
 ### 3. 文件上传
 
 ```typescript
-// 使用Ant Design Upload组件
-<Upload
-  beforeUpload={(file) => {
-    // 校验文件
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('文件不能超过2MB');
-      return false;
-    }
-    return true;
-  }}
-  onChange={(info) => {
-    if (info.file.status === 'done') {
-      setValue('fileUrl', info.file.response.url);
-    }
-  }}
->
-  <Button>点击上传</Button>
-</Upload>
+// 使用Ant Design Upload组件，配合Controller
+<Controller
+  name="fileUrl"
+  control={control}
+  render={({ field: { onChange } }) => (
+    <Upload
+      beforeUpload={(file) => {
+        // 校验文件
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+          message.error('文件不能超过2MB');
+          return false;
+        }
+        return true;
+      }}
+      onChange={(info) => {
+        if (info.file.status === 'done') {
+          onChange(info.file.response.url);
+        }
+      }}
+    >
+      <Button>点击上传</Button>
+    </Upload>
+  )}
+/>
 ```
 
 ### 4. 日期处理
@@ -277,14 +320,18 @@ const { fields, append, remove } = useFieldArray({
 ```typescript
 import dayjs from 'dayjs';
 
-// 提交前格式化
-const onSubmit = (data: FormValues) => {
-  const formatted = {
-    ...data,
-    birthDate: dayjs(data.birthDate).format('YYYY-MM-DD'),
-  };
-  submitForm(formatted);
-};
+// 使用Controller包裹DatePicker，处理dayjs与string的转换
+<Controller
+  name="birthDate"
+  control={control}
+  render={({ field }) => (
+    <DatePicker
+      value={field.value ? dayjs(field.value) : null}
+      onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || '')}
+      format="YYYY-MM-DD"
+    />
+  )}
+/>
 ```
 
 ## 错误处理规范
@@ -299,7 +346,13 @@ const onSubmit = (data: FormValues) => {
   validateStatus={errors.username ? 'error' : ''}
   help={errors.username?.message}
 >
-  <Input {...register('username')} />
+  <Controller
+    name="username"
+    control={control}
+    render={({ field }) => (
+      <Input {...field} placeholder="请输入用户名" />
+    )}
+  />
 </Form.Item>
 ```
 
@@ -327,14 +380,26 @@ try {
 
 ## 常用表单字段配置
 
+> 所有 Ant Design 组件必须通过 `Controller` 包裹使用。
+
 ### 文本输入框
 
 ```typescript
-<Form.Item label="姓名">
-  <Input
-    placeholder="请输入姓名"
-    maxLength={50}
-    {...register('name')}
+<Form.Item
+  label="姓名"
+  validateStatus={errors.name ? 'error' : ''}
+  help={errors.name?.message}
+>
+  <Controller
+    name="name"
+    control={control}
+    render={({ field }) => (
+      <Input
+        {...field}
+        placeholder="请输入姓名"
+        maxLength={50}
+      />
+    )}
   />
 </Form.Item>
 ```
@@ -342,11 +407,22 @@ try {
 ### 数字输入框
 
 ```typescript
-<Form.Item label="年龄">
-  <InputNumber
-    min={0}
-    max={150}
-    {...register('age', { valueAsNumber: true })}
+<Form.Item
+  label="年龄"
+  validateStatus={errors.age ? 'error' : ''}
+  help={errors.age?.message}
+>
+  <Controller
+    name="age"
+    control={control}
+    render={({ field }) => (
+      <InputNumber
+        {...field}
+        min={0}
+        max={150}
+        style={{ width: '100%' }}
+      />
+    )}
   />
 </Form.Item>
 ```
@@ -354,11 +430,21 @@ try {
 ### 下拉选择
 
 ```typescript
-<Form.Item label="部门">
-  <Select
-    placeholder="请选择部门"
-    options={DEPARTMENT_OPTIONS}
-    {...register('departmentId')}
+<Form.Item
+  label="部门"
+  validateStatus={errors.departmentId ? 'error' : ''}
+  help={errors.departmentId?.message}
+>
+  <Controller
+    name="departmentId"
+    control={control}
+    render={({ field }) => (
+      <Select
+        {...field}
+        placeholder="请选择部门"
+        options={DEPARTMENT_OPTIONS}
+      />
+    )}
   />
 </Form.Item>
 ```
@@ -367,10 +453,16 @@ try {
 
 ```typescript
 <Form.Item label="性别">
-  <Radio.Group {...register('gender')}>
-    <Radio value="male">男</Radio>
-    <Radio value="female">女</Radio>
-  </Radio.Group>
+  <Controller
+    name="gender"
+    control={control}
+    render={({ field }) => (
+      <Radio.Group {...field}>
+        <Radio value="male">男</Radio>
+        <Radio value="female">女</Radio>
+      </Radio.Group>
+    )}
+  />
 </Form.Item>
 ```
 
@@ -378,9 +470,15 @@ try {
 
 ```typescript
 <Form.Item label="兴趣爱好">
-  <Checkbox.Group
-    options={HOBBY_OPTIONS}
-    {...register('hobbies')}
+  <Controller
+    name="hobbies"
+    control={control}
+    render={({ field }) => (
+      <Checkbox.Group
+        {...field}
+        options={HOBBY_OPTIONS}
+      />
+    )}
   />
 </Form.Item>
 ```
@@ -389,9 +487,16 @@ try {
 
 ```typescript
 <Form.Item label="出生日期">
-  <DatePicker
-    format="YYYY-MM-DD"
-    {...register('birthDate')}
+  <Controller
+    name="birthDate"
+    control={control}
+    render={({ field }) => (
+      <DatePicker
+        value={field.value ? dayjs(field.value) : null}
+        onChange={(date) => field.onChange(date?.format('YYYY-MM-DD') || '')}
+        format="YYYY-MM-DD"
+      />
+    )}
   />
 </Form.Item>
 ```
@@ -400,11 +505,17 @@ try {
 
 ```typescript
 <Form.Item label="备注">
-  <Input.TextArea
-    rows={4}
-    maxLength={500}
-    showCount
-    {...register('remark')}
+  <Controller
+    name="remark"
+    control={control}
+    render={({ field }) => (
+      <Input.TextArea
+        {...field}
+        rows={4}
+        maxLength={500}
+        showCount
+      />
+    )}
   />
 </Form.Item>
 ```

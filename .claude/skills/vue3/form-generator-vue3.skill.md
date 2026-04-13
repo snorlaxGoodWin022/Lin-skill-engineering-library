@@ -18,9 +18,12 @@
 - Zod 3.x（表单校验）
 
 ### 状态管理
-- 表单内部状态：VeeValidate
+- 表单内部状态：VeeValidate（统一管理，不额外使用 ref）
 - 全局loading状态：Pinia的useLoadingStore
 - 提交成功后刷新：TanStack Query的invalidateQueries
+
+> **重要：** 表单数据统一由 VeeValidate 的 `useForm` 管理。
+> 不要额外创建 `ref` 来存储表单数据，避免双重状态同步问题。
 
 ## 代码规范
 
@@ -104,8 +107,20 @@ export const formSchema = z.object({
 ```vue
 <!-- index.vue -->
 <template>
-  <el-form :model="formData" label-position="top">
-    <!-- 表单字段按业务逻辑分组 -->
+  <el-form label-position="top">
+    <!-- 文本字段示例 -->
+    <el-form-item
+      label="用户名"
+      :error="errors.username"
+    >
+      <el-input
+        v-model="usernameField.value.value"
+        placeholder="请输入用户名"
+        :disabled="isReadOnly"
+      />
+    </el-form-item>
+
+    <!-- 其他表单字段按业务逻辑分组 -->
 
     <!-- 操作按钮 -->
     <template v-if="!isReadOnly">
@@ -122,9 +137,9 @@ export const formSchema = z.object({
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useForm, useField } from 'vee-validate';
-import { zodResolver } from '@vee-validate/zod';
+import { toTypedSchema } from '@vee-validate/zod';
 import { formSchema } from './schema';
 import { FormNameProps, FormValues } from './types';
 import { useFormSubmit } from './composables/useFormSubmit';
@@ -132,16 +147,20 @@ import { useFormSubmit } from './composables/useFormSubmit';
 // Props
 const props = defineProps<FormNameProps>();
 
-// 表单状态
+// 表单状态 —— 统一由 VeeValidate 管理
 const {
   handleSubmit: veeHandleSubmit,
-  formState: { errors, isSubmitting },
+  errors,
+  isSubmitting,
   resetForm,
   setFieldValue,
 } = useForm<FormValues>({
-  resolver: zodResolver(formSchema),
+  validationSchema: toTypedSchema(formSchema),
   initialValues: props.initialData,
 });
+
+// 使用 useField 绑定单个字段
+const usernameField = useField<string>('username');
 
 // 提交逻辑
 const { submitForm } = useFormSubmit({ mode: props.mode, onSuccess: props.onSuccess });
@@ -149,19 +168,9 @@ const { submitForm } = useFormSubmit({ mode: props.mode, onSuccess: props.onSucc
 // 是否只读模式
 const isReadOnly = computed(() => props.mode === 'view');
 
-// 表单数据
-const formData = ref<FormValues>(props.initialData || {} as FormValues);
-
 // 提交处理
 const handleSubmit = veeHandleSubmit(async (data) => {
   await submitForm(data);
-});
-
-// 监听初始数据变化
-onMounted(() => {
-  if (props.initialData) {
-    formData.value = { ...props.initialData };
-  }
 });
 </script>
 ```
@@ -219,14 +228,14 @@ export function useFormSubmit({ mode, onSuccess }: UseFormSubmitProps) {
 
 ```vue
 <template>
-  <el-form :model="formData">
+  <el-form label-position="top">
     <el-form-item label="分类">
-      <el-select v-model="formData.categoryId" @change="handleCategoryChange">
+      <el-select v-model="categoryIdField.value.value" @change="handleCategoryChange">
         <!-- 选项 -->
       </el-select>
     </el-form-item>
     <el-form-item label="子分类">
-      <el-select v-model="formData.subCategoryId">
+      <el-select v-model="subCategoryIdField.value.value">
         <!-- 选项 -->
       </el-select>
     </el-form-item>
@@ -234,21 +243,30 @@ export function useFormSubmit({ mode, onSuccess }: UseFormSubmitProps) {
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { watch } from 'vue';
+import { useForm, useField } from 'vee-validate';
 
-const formData = ref({
-  categoryId: '',
-  subCategoryId: '',
+const { setFieldValue } = useForm({
+  initialValues: {
+    categoryId: '',
+    subCategoryId: '',
+  },
 });
 
-// 监听分类变化
-watch(() => formData.value.categoryId, (newCategoryId) => {
+const categoryIdField = useField<string>('categoryId');
+const subCategoryIdField = useField<string>('subCategoryId');
+
+// 监听分类变化，联动更新子分类
+watch(categoryIdField.value, (newCategoryId) => {
   if (newCategoryId) {
-    // 联动更新子分类选项
-    formData.value.subCategoryId = '';
+    setFieldValue('subCategoryId', '');
     // 可以在这里加载子分类数据
   }
 });
+
+const handleCategoryChange = () => {
+  // change事件已通过watch处理
+};
 </script>
 ```
 
@@ -256,13 +274,13 @@ watch(() => formData.value.categoryId, (newCategoryId) => {
 
 ```vue
 <template>
-  <el-form :model="formData">
-    <div v-for="(item, index) in formData.items" :key="index" class="item-row">
+  <el-form label-position="top">
+    <div v-for="(_, index) in itemFields" :key="index" class="item-row">
       <el-form-item :label="`项目 ${index + 1}`">
-        <el-input v-model="item.name" placeholder="请输入项目名称" />
+        <el-input v-model="itemFields[index].name.value" placeholder="请输入项目名称" />
       </el-form-item>
       <el-form-item label="数量">
-        <el-input-number v-model="item.qty" :min="1" />
+        <el-input-number v-model="itemFields[index].qty.value" :min="1" />
       </el-form-item>
       <el-button type="danger" @click="removeItem(index)">删除</el-button>
     </div>
@@ -271,20 +289,24 @@ watch(() => formData.value.categoryId, (newCategoryId) => {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive } from 'vue';
 
-const formData = ref({
-  items: [] as Array<{ name: string; qty: number }>,
-});
+interface ItemForm {
+  name: string;
+  qty: number;
+}
+
+// 使用 reactive 数组管理动态字段的 useField
+const itemFields = reactive<Array<{ name: { value: string }; qty: { value: number } }>>([]);
 
 // 添加项目
 const addItem = () => {
-  formData.value.items.push({ name: '', qty: 1 });
+  itemFields.push({ name: { value: '' }, qty: { value: 1 } });
 };
 
 // 删除项目
 const removeItem = (index: number) => {
-  formData.value.items.splice(index, 1);
+  itemFields.splice(index, 1);
 };
 </script>
 ```
@@ -293,7 +315,7 @@ const removeItem = (index: number) => {
 
 ```vue
 <template>
-  <el-form :model="formData">
+  <el-form label-position="top">
     <el-form-item label="文件上传">
       <el-upload
         class="upload-demo"
@@ -314,11 +336,13 @@ const removeItem = (index: number) => {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
+import { useForm } from 'vee-validate';
 
-const formData = ref({
-  fileUrl: '',
+const { setFieldValue } = useForm({
+  initialValues: {
+    fileUrl: '',
+  },
 });
 
 const uploadUrl = '/api/upload';
@@ -333,9 +357,9 @@ const beforeUpload = (file: File) => {
   return true;
 };
 
-// 上传成功处理
-const handleUploadSuccess = (response: any) => {
-  formData.value.fileUrl = response.url;
+// 上传成功处理 —— 使用 setFieldValue 更新表单状态
+const handleUploadSuccess = (response: { url: string }) => {
+  setFieldValue('fileUrl', response.url);
   ElMessage.success('上传成功');
 };
 </script>
@@ -345,10 +369,10 @@ const handleUploadSuccess = (response: any) => {
 
 ```vue
 <template>
-  <el-form :model="formData">
+  <el-form label-position="top">
     <el-form-item label="出生日期">
       <el-date-picker
-        v-model="formData.birthDate"
+        v-model="birthDateField.value.value"
         type="date"
         format="YYYY-MM-DD"
         value-format="YYYY-MM-DD"
@@ -359,12 +383,10 @@ const handleUploadSuccess = (response: any) => {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import dayjs from 'dayjs';
+import { useField } from 'vee-validate';
 
-const formData = ref({
-  birthDate: '',
-});
+const birthDateField = useField<string>('birthDate');
 
 // 提交前格式化（如果需要）
 const formatDate = (date: string) => {
@@ -381,31 +403,31 @@ const formatDate = (date: string) => {
 
 ```vue
 <template>
-  <el-form :model="formData">
+  <el-form label-position="top">
     <el-form-item
       label="用户名"
-      :error="errors.username?.message"
+      :error="errors.username"
     >
-      <el-input v-model="formData.username" placeholder="请输入用户名" />
+      <el-input
+        v-model="usernameField.value.value"
+        placeholder="请输入用户名"
+      />
     </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useForm } from 'vee-validate';
-import { zodResolver } from '@vee-validate/zod';
+import { useForm, useField } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
 import { formSchema } from './schema';
 
 const {
-  formState: { errors },
+  errors,
 } = useForm({
-  resolver: zodResolver(formSchema),
+  validationSchema: toTypedSchema(formSchema),
 });
 
-const formData = ref({
-  username: '',
-});
+const usernameField = useField<string>('username');
 </script>
 ```
 
@@ -435,12 +457,14 @@ const submitForm = async (data: FormValues) => {
 
 ## 常用表单字段配置
 
+> 所有字段通过 `useField` 绑定，使用 `field.value.value` 进行 v-model 绑定。
+
 ### 文本输入框
 
 ```vue
-<el-form-item label="姓名">
+<el-form-item label="姓名" :error="errors.name">
   <el-input
-    v-model="formData.name"
+    v-model="nameField.value.value"
     placeholder="请输入姓名"
     :maxlength="50"
     show-word-limit
@@ -451,9 +475,9 @@ const submitForm = async (data: FormValues) => {
 ### 数字输入框
 
 ```vue
-<el-form-item label="年龄">
+<el-form-item label="年龄" :error="errors.age">
   <el-input-number
-    v-model="formData.age"
+    v-model="ageField.value.value"
     :min="0"
     :max="150"
   />
@@ -463,9 +487,9 @@ const submitForm = async (data: FormValues) => {
 ### 下拉选择
 
 ```vue
-<el-form-item label="部门">
+<el-form-item label="部门" :error="errors.departmentId">
   <el-select
-    v-model="formData.departmentId"
+    v-model="departmentIdField.value.value"
     placeholder="请选择部门"
   >
     <el-option
@@ -482,7 +506,7 @@ const submitForm = async (data: FormValues) => {
 
 ```vue
 <el-form-item label="性别">
-  <el-radio-group v-model="formData.gender">
+  <el-radio-group v-model="genderField.value.value">
     <el-radio label="male">男</el-radio>
     <el-radio label="female">女</el-radio>
   </el-radio-group>
@@ -493,7 +517,7 @@ const submitForm = async (data: FormValues) => {
 
 ```vue
 <el-form-item label="兴趣爱好">
-  <el-checkbox-group v-model="formData.hobbies">
+  <el-checkbox-group v-model="hobbiesField.value.value">
     <el-checkbox v-for="hobby in hobbyOptions" :key="hobby.value" :label="hobby.value">
       {{ hobby.label }}
     </el-checkbox>
@@ -506,7 +530,7 @@ const submitForm = async (data: FormValues) => {
 ```vue
 <el-form-item label="出生日期">
   <el-date-picker
-    v-model="formData.birthDate"
+    v-model="birthDateField.value.value"
     type="date"
     format="YYYY-MM-DD"
     value-format="YYYY-MM-DD"
@@ -520,7 +544,7 @@ const submitForm = async (data: FormValues) => {
 ```vue
 <el-form-item label="备注">
   <el-input
-    v-model="formData.remark"
+    v-model="remarkField.value.value"
     type="textarea"
     :rows="4"
     :maxlength="500"
@@ -583,12 +607,7 @@ describe('FormName', () => {
     });
 
     // 填写表单...
-    await wrapper.setData({
-      formData: {
-        username: 'test',
-        // 其他字段...
-      },
-    });
+    await wrapper.vm.$nextTick();
 
     const submitBtn = wrapper.find('button[type="primary"]');
     await submitBtn.trigger('click');
