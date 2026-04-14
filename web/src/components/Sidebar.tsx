@@ -69,7 +69,9 @@ export default function Sidebar({ skills, currentSkill, onClose }: Props) {
         <Link
           href="/editor"
           className={`flex items-center gap-2 px-3 py-2 rounded-lg mb-2 ${
-            pathname.startsWith('/editor') ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
+            pathname.startsWith('/editor')
+              ? 'bg-blue-50 text-blue-700'
+              : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
           <span>✏️</span>

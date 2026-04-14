@@ -15,9 +15,7 @@ export default function FrameworkSelector({ value, onChange, supported }: Props)
 
   return (
     <div>
-      <h3 className="text-base font-medium text-gray-900 dark:text-white mb-3">
-        选择技术栈
-      </h3>
+      <h3 className="text-base font-medium text-gray-900 dark:text-white mb-3">选择技术栈</h3>
       <div className="flex gap-3">
         {frameworks.map((fw) => {
           const disabled = !supported.includes(fw.key)
@@ -30,10 +28,10 @@ export default function FrameworkSelector({ value, onChange, supported }: Props)
                 disabled
                   ? 'opacity-40 cursor-not-allowed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
                   : value === fw.key
-                  ? fw.color === 'blue'
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200'
-                    : 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-2 ring-green-200'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 bg-white dark:bg-gray-800'
+                    ? fw.color === 'blue'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200'
+                      : 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-2 ring-green-200'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 bg-white dark:bg-gray-800'
               }`}
             >
               <div className="text-2xl mb-1">{fw.key === 'react' ? '⚛️' : '💚'}</div>

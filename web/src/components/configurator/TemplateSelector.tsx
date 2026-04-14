@@ -14,9 +14,7 @@ export default function TemplateSelector({ value, onChange }: Props) {
 
   return (
     <div>
-      <h3 className="text-base font-medium text-gray-900 dark:text-white mb-3">
-        选择模板类型
-      </h3>
+      <h3 className="text-base font-medium text-gray-900 dark:text-white mb-3">选择模板类型</h3>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {templates.map((t) => (
           <button
@@ -29,9 +27,7 @@ export default function TemplateSelector({ value, onChange }: Props) {
             }`}
           >
             <div className="text-xl mb-1">{t.icon}</div>
-            <div className="font-medium text-sm text-gray-900 dark:text-white">
-              {t.label}
-            </div>
+            <div className="font-medium text-sm text-gray-900 dark:text-white">{t.label}</div>
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
               {t.description}
             </div>

@@ -15,9 +15,7 @@ export default function MarkdownRenderer({ content }: Props) {
     let result = content
       // 代码块
       .replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
-        const highlighted = lang
-          ? hljs.highlight(code, { language: lang }).value
-          : code
+        const highlighted = lang ? hljs.highlight(code, { language: lang }).value : code
         return `<pre class="bg-gray-100 p-4 rounded-lg overflow-auto my-4"><code>${highlighted}</code></pre>`
       })
       // 行内代码
@@ -32,7 +30,10 @@ export default function MarkdownRenderer({ content }: Props) {
       .replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
       .replace(/^(\d+)\. (.+)$/gm, '<li class="ml-4">$2</li>')
       // 链接
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
+      .replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '<a href="$2" class="text-blue-600 hover:underline">$1</a>'
+      )
       // 段落
       .replace(/\n\n/g, '</p><p class="my-3">')
       // 表格
@@ -44,10 +45,5 @@ export default function MarkdownRenderer({ content }: Props) {
     return `<div class="prose prose-sm max-w-none"><p class="my-3">${result}</p></div>`
   }, [content])
 
-  return (
-    <div
-      className="markdown-body p-6"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  )
+  return <div className="markdown-body p-6" dangerouslySetInnerHTML={{ __html: html }} />
 }

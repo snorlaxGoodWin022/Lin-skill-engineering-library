@@ -1,5 +1,10 @@
 // lib/skill-import-parser.ts
-import type { TemplateType, FieldDefinition, ParsedSkill, ParsedSkillDetected } from '@/types/configurator'
+import type {
+  TemplateType,
+  FieldDefinition,
+  ParsedSkill,
+  ParsedSkillDetected,
+} from '@/types/configurator'
 
 // ===== 反向类型映射 =====
 
@@ -38,7 +43,7 @@ export function parseSkillMarkdown(content: string): ParsedSkill | null {
     detected: {
       name,
       confidence,
-      sections: sections.map(s => s.title),
+      sections: sections.map((s) => s.title),
       warnings,
     },
   }
@@ -82,7 +87,7 @@ function extractH1(content: string): string {
 }
 
 function findSection(sections: Section[], keyword: string): Section | undefined {
-  return sections.find(s => s.title.includes(keyword))
+  return sections.find((s) => s.title.includes(keyword))
 }
 
 // ===== A. 框架检测 =====
@@ -93,10 +98,28 @@ function detectFramework(content: string, h1: string): 'react' | 'vue3' | null {
   if (/\(Vue3?\)/.test(h1) || /\(Vue\s*3?\)/.test(h1)) return 'vue3'
 
   // 技术栈关键词
-  const reactKeywords = ['react-hook-form', 'Zustand', 'Ant Design', 'antd', '@tanstack/react-query', 'Jest', 'Testing Library']
-  const vueKeywords = ['vee-validate', 'Pinia', 'Element Plus', 'element-plus', '@tanstack/vue-query', 'Vitest', 'defineStore', 'composable']
+  const reactKeywords = [
+    'react-hook-form',
+    'Zustand',
+    'Ant Design',
+    'antd',
+    '@tanstack/react-query',
+    'Jest',
+    'Testing Library',
+  ]
+  const vueKeywords = [
+    'vee-validate',
+    'Pinia',
+    'Element Plus',
+    'element-plus',
+    '@tanstack/vue-query',
+    'Vitest',
+    'defineStore',
+    'composable',
+  ]
 
-  let reactScore = 0, vueScore = 0
+  let reactScore = 0,
+    vueScore = 0
   for (const kw of reactKeywords) {
     if (content.includes(kw)) reactScore++
   }
@@ -116,9 +139,18 @@ function detectFramework(content: string, h1: string): 'react' | 'vue3' | null {
 
 // ===== B. 模板类型检测 =====
 
-function detectTemplateType(content: string, h1: string): { templateType: TemplateType | null; confidence: 'high' | 'medium' | 'low' } {
+function detectTemplateType(
+  content: string,
+  h1: string
+): { templateType: TemplateType | null; confidence: 'high' | 'medium' | 'low' } {
   const scores: Record<TemplateType, number> = {
-    form: 0, crud: 0, api: 0, 'unit-test': 0, hooks: 0, state: 0, utils: 0,
+    form: 0,
+    crud: 0,
+    api: 0,
+    'unit-test': 0,
+    hooks: 0,
+    state: 0,
+    utils: 0,
   }
 
   // H1 关键词
@@ -132,7 +164,10 @@ function detectTemplateType(content: string, h1: string): { templateType: Templa
 
   // 内容信号
   if (/FormData/.test(content)) scores.form += 3
-  if (/useQuery|useMutation/.test(content)) { scores.crud += 3; scores.api += 3 }
+  if (/useQuery|useMutation/.test(content)) {
+    scores.crud += 3
+    scores.api += 3
+  }
   if (/describe\s*\(|it\s*\(/.test(content)) scores['unit-test'] += 5
   if (/create\s*<|defineStore/.test(content)) scores.state += 4
   if (/export\s+function\s+use[A-Z]/.test(content)) scores.hooks += 3
@@ -140,7 +175,10 @@ function detectTemplateType(content: string, h1: string): { templateType: Templa
   if (/纯函数/.test(content)) scores.utils += 2
 
   // 文件结构信号
-  if (/\bapi\//.test(content)) { scores.crud += 2; scores.api += 2 }
+  if (/\bapi\//.test(content)) {
+    scores.crud += 2
+    scores.api += 2
+  }
   if (/\bstore\b|stores\//.test(content)) scores.state += 3
   if (/\bhooks\b|composables\//.test(content)) scores.hooks += 2
   if (/__tests__|\.test\./.test(content)) scores['unit-test'] += 2
@@ -178,7 +216,19 @@ function extractName(h1: string): string | null {
   // 去掉括号后缀 (React) / (Vue3)
   name = name.replace(/\s*\((?:React|Vue3?)\)\s*$/, '').trim()
   // 去掉类型标签后缀
-  const typeSuffixes = ['表单生成器', 'CRUD 模板', 'CRUD模板', 'API 层封装', 'API层封装', '单元测试', 'Hooks 模板', 'Hook 模板', 'Composable 模板', '状态管理', '工具函数']
+  const typeSuffixes = [
+    '表单生成器',
+    'CRUD 模板',
+    'CRUD模板',
+    'API 层封装',
+    'API层封装',
+    '单元测试',
+    'Hooks 模板',
+    'Hook 模板',
+    'Composable 模板',
+    '状态管理',
+    '工具函数',
+  ]
   for (const suffix of typeSuffixes) {
     if (name.endsWith(suffix)) {
       name = name.slice(0, -suffix.length).trim()
@@ -195,7 +245,7 @@ function extractConfig(
   sections: Section[],
   templateType: TemplateType | null,
   name: string | null,
-  warnings: string[],
+  warnings: string[]
 ): { values: Record<string, any>; fields: FieldDefinition[] } {
   const values: Record<string, any> = {}
   let fields: FieldDefinition[] = []
@@ -203,8 +253,14 @@ function extractConfig(
   // 通用：描述（使用场景第一段）
   const usageSection = findSection(sections, '使用场景')
   if (usageSection) {
-    const firstLine = usageSection.content.split('\n').find(l => l.trim() && !l.trim().startsWith('-') && !l.trim().startsWith('用于'))
-    if (firstLine) values.description = firstLine.trim().replace(/，适用于：$/, '').replace(/，$/, '')
+    const firstLine = usageSection.content
+      .split('\n')
+      .find((l) => l.trim() && !l.trim().startsWith('-') && !l.trim().startsWith('用于'))
+    if (firstLine)
+      values.description = firstLine
+        .trim()
+        .replace(/，适用于：$/, '')
+        .replace(/，$/, '')
   }
 
   // 提取 TypeScript 接口中的字段
@@ -289,7 +345,9 @@ function extractFieldsFromTsInterfaces(content: string, warnings: string[]): Fie
   while ((blockMatch = codeBlockRegex.exec(content)) !== null) {
     const block = blockMatch[1]
     for (const ifaceName of targetInterfaces) {
-      const ifacePattern = new RegExp(`interface\\s+${escapeRegex(ifaceName)}\\s*\\{([\\s\\S]*?)\\}`)
+      const ifacePattern = new RegExp(
+        `interface\\s+${escapeRegex(ifaceName)}\\s*\\{([\\s\\S]*?)\\}`
+      )
       const ifaceMatch = ifacePattern.exec(block)
       if (ifaceMatch) {
         const body = ifaceMatch[1]
@@ -311,7 +369,8 @@ function parseInterfaceBody(body: string): FieldDefinition[] {
 
   for (const line of lines) {
     const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*')) continue
+    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*'))
+      continue
 
     // 匹配 fieldName?: type 或 fieldName: type
     const propMatch = trimmed.match(/^(\w+)(\??):\s*(\w+(?:\[\])?)/)
@@ -343,15 +402,18 @@ function escapeRegex(str: string): string {
 // ===== 特有值提取 =====
 
 function extractApiBaseUrl(content: string): string | null {
-  const match = content.match(/(?:const\s+BASE_URL\s*=\s*|apiBaseUrl[：:]\s*)(['"`])(\/[^'"`\s]+)\1/)
+  const match = content.match(
+    /(?:const\s+BASE_URL\s*=\s*|apiBaseUrl[：:]\s*)(['"`])(\/[^'"`\s]+)\1/
+  )
   return match ? match[2] : null
 }
 
 function extractFeatures(sections: Section[], values: Record<string, any>) {
   const featureSection = findSection(sections, '附加功能')
   if (featureSection) {
-    const features = featureSection.content.split('\n')
-      .map(l => l.replace(/^-\s*/, '').trim())
+    const features = featureSection.content
+      .split('\n')
+      .map((l) => l.replace(/^-\s*/, '').trim())
       .filter(Boolean)
     if (features.length) values.features = features.join(', ')
   }

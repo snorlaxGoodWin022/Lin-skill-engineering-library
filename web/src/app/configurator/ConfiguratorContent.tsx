@@ -15,11 +15,16 @@ import type { ParsedSkill } from '@/types/configurator'
 
 export default function ConfiguratorContent() {
   const {
-    step, setStep,
-    templateType, setTemplateType,
-    framework, setFramework,
-    values, setFieldValue,
-    fields, setFields,
+    step,
+    setStep,
+    templateType,
+    setTemplateType,
+    framework,
+    setFramework,
+    values,
+    setFieldValue,
+    fields,
+    setFields,
     resetConfig,
     importConfig,
   } = useConfigStore()
@@ -75,17 +80,19 @@ export default function ConfiguratorContent() {
                     step === s.num
                       ? 'text-blue-600 dark:text-blue-400 font-medium'
                       : s.num < step
-                      ? 'text-blue-500 dark:text-blue-500 cursor-pointer'
-                      : 'text-gray-400 dark:text-gray-500'
+                        ? 'text-blue-500 dark:text-blue-500 cursor-pointer'
+                        : 'text-gray-400 dark:text-gray-500'
                   }`}
                 >
-                  <span className={`w-5 h-5 rounded-full text-xs flex items-center justify-center ${
-                    step === s.num
-                      ? 'bg-blue-600 text-white'
-                      : s.num < step
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
-                  }`}>
+                  <span
+                    className={`w-5 h-5 rounded-full text-xs flex items-center justify-center ${
+                      step === s.num
+                        ? 'bg-blue-600 text-white'
+                        : s.num < step
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+                    }`}
+                  >
                     {s.num < step ? '✓' : s.num}
                   </span>
                   <span className="hidden sm:inline">{s.label}</span>
@@ -137,10 +144,10 @@ export default function ConfiguratorContent() {
           </div>
 
           {/* 配置内容 */}
-          <div className={`flex-1 overflow-auto p-4 ${activeTab !== 'config' ? 'hidden md:block' : ''}`}>
-            {step === 1 && (
-              <TemplateSelector value={templateType} onChange={setTemplateType} />
-            )}
+          <div
+            className={`flex-1 overflow-auto p-4 ${activeTab !== 'config' ? 'hidden md:block' : ''}`}
+          >
+            {step === 1 && <TemplateSelector value={templateType} onChange={setTemplateType} />}
 
             {step === 2 && templateType && (
               <FrameworkSelector
@@ -181,7 +188,9 @@ export default function ConfiguratorContent() {
         </div>
 
         {/* 右侧：预览 */}
-        <div className={`flex-1 flex flex-col min-w-0 ${activeTab !== 'preview' ? 'hidden md:flex' : 'flex'}`}>
+        <div
+          className={`flex-1 flex flex-col min-w-0 ${activeTab !== 'preview' ? 'hidden md:flex' : 'flex'}`}
+        >
           {/* 预览头 */}
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <span className="text-sm text-gray-500 dark:text-gray-400">

@@ -181,18 +181,18 @@ interface UserFormData {
 \`\`\``)
       expect(result!.fields.length).toBe(4)
 
-      const username = result!.fields.find(f => f.name === 'username')
+      const username = result!.fields.find((f) => f.name === 'username')
       expect(username).toBeDefined()
       expect(username!.type).toBe('text')
       expect(username!.required).toBe(true)
 
-      const age = result!.fields.find(f => f.name === 'age')
+      const age = result!.fields.find((f) => f.name === 'age')
       expect(age!.type).toBe('number')
 
-      const isActive = result!.fields.find(f => f.name === 'isActive')
+      const isActive = result!.fields.find((f) => f.name === 'isActive')
       expect(isActive!.type).toBe('boolean')
 
-      const email = result!.fields.find(f => f.name === 'email')
+      const email = result!.fields.find((f) => f.name === 'email')
       expect(email!.required).toBe(false)
     })
 
@@ -207,7 +207,7 @@ interface ItemFields {
   title: string
 }
 \`\`\``)
-      const names = result!.fields.map(f => f.name)
+      const names = result!.fields.map((f) => f.name)
       expect(names).not.toContain('id')
       expect(names).not.toContain('createTime')
       expect(names).not.toContain('updateTime')

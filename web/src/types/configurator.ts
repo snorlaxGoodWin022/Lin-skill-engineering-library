@@ -2,7 +2,15 @@
 
 export type TemplateType = 'form' | 'crud' | 'api' | 'unit-test' | 'hooks' | 'state' | 'utils'
 
-export type FieldType = 'text' | 'number' | 'select' | 'boolean' | 'textarea' | 'fields-list' | 'date' | 'email'
+export type FieldType =
+  | 'text'
+  | 'number'
+  | 'select'
+  | 'boolean'
+  | 'textarea'
+  | 'fields-list'
+  | 'date'
+  | 'email'
 
 export interface ConfigFieldSchema {
   key: string

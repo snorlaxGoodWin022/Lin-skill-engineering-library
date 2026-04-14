@@ -24,9 +24,7 @@ const getSkillsDir = () => {
 export function getSkillFilenames(): string[] {
   try {
     const dir = getSkillsDir()
-    return fs
-      .readdirSync(dir)
-      .filter((file) => file.endsWith('.md') && file !== 'readme.md')
+    return fs.readdirSync(dir).filter((file) => file.endsWith('.md') && file !== 'readme.md')
   } catch {
     return []
   }

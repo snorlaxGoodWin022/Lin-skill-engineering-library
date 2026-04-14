@@ -31,8 +31,7 @@ export default function SkillList({ skills }: Props) {
       const q = searchQuery.toLowerCase()
       result = result.filter(
         (s) =>
-          s.meta.title.toLowerCase().includes(q) ||
-          s.meta.description.toLowerCase().includes(q)
+          s.meta.title.toLowerCase().includes(q) || s.meta.description.toLowerCase().includes(q)
       )
     }
 
@@ -40,11 +39,7 @@ export default function SkillList({ skills }: Props) {
   }, [skills, framework, category, searchQuery])
 
   if (filteredSkills.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-500">
-        没有找到匹配的 Skill
-      </div>
-    )
+    return <div className="text-center py-12 text-gray-500">没有找到匹配的 Skill</div>
   }
 
   return (

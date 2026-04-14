@@ -11,29 +11,17 @@
  * npm run validate -- <skill-file-path>
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
 
 // Skill.md 必需的部分（支持多种标题写法）
-const REQUIRED_SECTIONS = [
-  '# Skill:',
-  '## 输出要求'
-];
+const REQUIRED_SECTIONS = ['# Skill:', '## 输出要求']
 
 // 使用场景标题的多种写法（满足任一即可）
-const USAGE_SCENARIO_VARIANTS = [
-  '## 使用场景',
-  '## 适用范围',
-  '## 适用场景',
-];
+const USAGE_SCENARIO_VARIANTS = ['## 使用场景', '## 适用范围', '## 适用场景']
 
 // 技术栈标题的多种写法（满足任一即可）
-const TECH_STACK_VARIANTS = [
-  '## 技术栈约定',
-  '## 技术栈',
-  '## 技术依赖',
-  '## 核心依赖',
-];
+const TECH_STACK_VARIANTS = ['## 技术栈约定', '## 技术栈', '## 技术依赖', '## 核心依赖']
 
 // 建议的部分
 const RECOMMENDED_SECTIONS = [
@@ -43,158 +31,163 @@ const RECOMMENDED_SECTIONS = [
   '## 常见场景处理',
   '## 测试规范',
   '## 部署配置',
-  '## 版本更新记录'
-];
+  '## 版本更新记录',
+]
 
 // 验证函数
 function validateSkillFile(filePath) {
-  console.log(`🔍 验证文件: ${filePath}`);
+  console.log(`🔍 验证文件: ${filePath}`)
 
   if (!fs.existsSync(filePath)) {
-    console.error(`❌ 文件不存在: ${filePath}`);
-    return false;
+    console.error(`❌ 文件不存在: ${filePath}`)
+    return false
   }
 
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const lines = content.split('\n');
+  const content = fs.readFileSync(filePath, 'utf-8')
+  const lines = content.split('\n')
 
-  let hasErrors = false;
-  const foundSections = [];
-  const missingRequired = [];
-  const missingRecommended = [];
+  let hasErrors = false
+  const foundSections = []
+  const missingRequired = []
+  const missingRecommended = []
 
   // 检查必需部分
   for (const section of REQUIRED_SECTIONS) {
     if (content.includes(section)) {
-      foundSections.push(section);
+      foundSections.push(section)
     } else {
-      missingRequired.push(section);
-      hasErrors = true;
+      missingRequired.push(section)
+      hasErrors = true
     }
   }
 
   // 检查使用场景部分（支持多种标题）
-  const hasUsageScenario = USAGE_SCENARIO_VARIANTS.some(v => content.includes(v));
+  const hasUsageScenario = USAGE_SCENARIO_VARIANTS.some((v) => content.includes(v))
   if (hasUsageScenario) {
-    foundSections.push('## 使用场景');
+    foundSections.push('## 使用场景')
   } else {
-    missingRequired.push('## 使用场景');
-    hasErrors = true;
+    missingRequired.push('## 使用场景')
+    hasErrors = true
   }
 
   // 检查技术栈部分（建议有，但不阻止通过）
-  const hasTechStack = TECH_STACK_VARIANTS.some(v => content.includes(v));
+  const hasTechStack = TECH_STACK_VARIANTS.some((v) => content.includes(v))
   if (hasTechStack) {
-    foundSections.push('## 技术栈');
+    foundSections.push('## 技术栈')
   } else {
-    missingRecommended.push('## 技术栈（或技术栈约定/核心依赖）');
+    missingRecommended.push('## 技术栈（或技术栈约定/核心依赖）')
   }
 
   // 检查建议部分
   for (const section of RECOMMENDED_SECTIONS) {
     if (content.includes(section)) {
-      foundSections.push(section);
+      foundSections.push(section)
     } else {
-      missingRecommended.push(section);
+      missingRecommended.push(section)
     }
   }
 
   // 检查文件扩展名
   if (!filePath.endsWith('.skill.md') && !filePath.endsWith('.skill.md')) {
-    console.warn('⚠️  建议使用 .skill.md 作为文件扩展名');
+    console.warn('⚠️  建议使用 .skill.md 作为文件扩展名')
   }
 
   // 检查是否包含代码示例
-  const hasCodeExamples = content.includes('```typescript') || content.includes('```javascript') || content.includes('```jsx');
+  const hasCodeExamples =
+    content.includes('```typescript') ||
+    content.includes('```javascript') ||
+    content.includes('```jsx')
 
   // 输出结果
-  console.log('\n📊 验证结果:');
-  console.log(`📁 文件: ${path.basename(filePath)}`);
-  console.log(`📏 大小: ${content.length} 字符, ${lines.length} 行`);
+  console.log('\n📊 验证结果:')
+  console.log(`📁 文件: ${path.basename(filePath)}`)
+  console.log(`📏 大小: ${content.length} 字符, ${lines.length} 行`)
 
   if (foundSections.length > 0) {
-    console.log('\n✅ 找到的部分:');
-    foundSections.forEach(section => {
-      console.log(`  - ${section}`);
-    });
+    console.log('\n✅ 找到的部分:')
+    foundSections.forEach((section) => {
+      console.log(`  - ${section}`)
+    })
   }
 
   if (missingRequired.length > 0) {
-    console.log('\n❌ 缺失的必需部分:');
-    missingRequired.forEach(section => {
-      console.log(`  - ${section}`);
-    });
+    console.log('\n❌ 缺失的必需部分:')
+    missingRequired.forEach((section) => {
+      console.log(`  - ${section}`)
+    })
   }
 
   if (missingRecommended.length > 0) {
-    console.log('\n⚠️  缺失的建议部分:');
-    missingRecommended.forEach(section => {
-      console.log(`  - ${section}`);
-    });
+    console.log('\n⚠️  缺失的建议部分:')
+    missingRecommended.forEach((section) => {
+      console.log(`  - ${section}`)
+    })
   }
 
-  console.log(`\n💻 代码示例: ${hasCodeExamples ? '✅ 有' : '⚠️  无'}`);
+  console.log(`\n💻 代码示例: ${hasCodeExamples ? '✅ 有' : '⚠️  无'}`)
 
   // 检查Skill名称格式
-  const skillNameMatch = content.match(/^# Skill:\s*(.+)$/m);
+  const skillNameMatch = content.match(/^# Skill:\s*(.+)$/m)
   if (skillNameMatch) {
-    const skillName = skillNameMatch[1].trim();
-    console.log(`🏷️  Skill名称: ${skillName}`);
+    const skillName = skillNameMatch[1].trim()
+    console.log(`🏷️  Skill名称: ${skillName}`)
 
     if (!skillName || skillName === '[技能名称]') {
-      console.warn('⚠️  Skill名称需要自定义，不能使用占位符');
+      console.warn('⚠️  Skill名称需要自定义，不能使用占位符')
     }
   } else {
-    console.error('❌ 未找到Skill名称（# Skill: 标题）');
-    hasErrors = true;
+    console.error('❌ 未找到Skill名称（# Skill: 标题）')
+    hasErrors = true
   }
 
   // 检查使用场景描述
-  const usageScenarioMatch = content.match(/## 使用场景\s*\n([^#]+)/);
+  const usageScenarioMatch = content.match(/## 使用场景\s*\n([^#]+)/)
   if (usageScenarioMatch) {
-    const scenarioText = usageScenarioMatch[1].trim();
-    const scenarioLines = scenarioText.split('\n').filter(line => line.trim());
+    const scenarioText = usageScenarioMatch[1].trim()
+    const scenarioLines = scenarioText.split('\n').filter((line) => line.trim())
 
     if (scenarioLines.length < 2) {
-      console.warn('⚠️  使用场景描述过于简单，建议详细说明适用场景');
+      console.warn('⚠️  使用场景描述过于简单，建议详细说明适用场景')
     }
   }
 
   // 检查技术栈约定
-  const techStackMatch = content.match(/## 技术栈约定\s*\n([^#]+)/);
+  const techStackMatch = content.match(/## 技术栈约定\s*\n([^#]+)/)
   if (techStackMatch) {
-    const techStackText = techStackMatch[1].trim();
+    const techStackText = techStackMatch[1].trim()
 
     // 检查是否包含版本号
-    const hasVersions = techStackText.match(/\d+\.\d+/g);
+    const hasVersions = techStackText.match(/\d+\.\d+/g)
     if (!hasVersions || hasVersions.length < 2) {
-      console.warn('⚠️  技术栈建议包含版本号，如：React 18.x, TypeScript 5.x');
+      console.warn('⚠️  技术栈建议包含版本号，如：React 18.x, TypeScript 5.x')
     }
   }
 
   // 检查输出要求
-  const outputRequirementsMatch = content.match(/## 输出要求\s*\n([^#]+)/);
+  const outputRequirementsMatch = content.match(/## 输出要求\s*\n([^#]+)/)
   if (outputRequirementsMatch) {
-    const requirementsText = outputRequirementsMatch[1].trim();
-    const requirementLines = requirementsText.split('\n').filter(line => line.trim().startsWith('1.') || line.trim().startsWith('-'));
+    const requirementsText = outputRequirementsMatch[1].trim()
+    const requirementLines = requirementsText
+      .split('\n')
+      .filter((line) => line.trim().startsWith('1.') || line.trim().startsWith('-'))
 
     if (requirementLines.length < 3) {
-      console.warn('⚠️  输出要求建议至少包含3条具体要求');
+      console.warn('⚠️  输出要求建议至少包含3条具体要求')
     }
   }
 
   // 总结
-  console.log('\n📋 验证总结:');
+  console.log('\n📋 验证总结:')
   if (hasErrors) {
-    console.error('❌ 验证失败：缺少必需部分');
-    console.error('   必需修复以上错误才能使用该Skill');
-    return false;
+    console.error('❌ 验证失败：缺少必需部分')
+    console.error('   必需修复以上错误才能使用该Skill')
+    return false
   } else if (missingRecommended.length > 3) {
-    console.warn('⚠️  验证通过，但建议补充缺失的部分');
-    return true;
+    console.warn('⚠️  验证通过，但建议补充缺失的部分')
+    return true
   } else {
-    console.log('✅ 验证通过！');
-    return true;
+    console.log('✅ 验证通过！')
+    return true
   }
 }
 
@@ -202,99 +195,103 @@ function validateSkillFile(filePath) {
  * 递归收集目录下所有 .skill.md 文件
  */
 function collectSkillFiles(dirPath) {
-  const results = [];
+  const results = []
 
   function walk(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    const entries = fs.readdirSync(dir, { withFileTypes: true })
     for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
+      const fullPath = path.join(dir, entry.name)
       if (entry.isDirectory()) {
-        walk(fullPath);
+        walk(fullPath)
       } else if (entry.name.endsWith('.skill.md')) {
-        results.push(fullPath);
+        results.push(fullPath)
       }
     }
   }
 
-  walk(dirPath);
-  return results;
+  walk(dirPath)
+  return results
 }
 
 // 批量验证目录
 function validateSkillDirectory(dirPath, recursive = true) {
-  console.log(`📂 验证目录: ${dirPath}`);
+  console.log(`📂 验证目录: ${dirPath}`)
 
   if (!fs.existsSync(dirPath)) {
-    console.error(`❌ 目录不存在: ${dirPath}`);
-    return;
+    console.error(`❌ 目录不存在: ${dirPath}`)
+    return
   }
 
   const skillFiles = recursive
     ? collectSkillFiles(dirPath)
-    : fs.readdirSync(dirPath).filter(f => f.endsWith('.skill.md')).map(f => path.join(dirPath, f));
+    : fs
+        .readdirSync(dirPath)
+        .filter((f) => f.endsWith('.skill.md'))
+        .map((f) => path.join(dirPath, f))
 
   if (skillFiles.length === 0) {
-    console.log('ℹ️  目录中没有找到 .skill.md 文件');
-    return;
+    console.log('ℹ️  目录中没有找到 .skill.md 文件')
+    return
   }
 
-  console.log(`📄 找到 ${skillFiles.length} 个Skill文件:\n`);
+  console.log(`📄 找到 ${skillFiles.length} 个Skill文件:\n`)
 
-  let passed = 0;
-  let failed = 0;
+  let passed = 0
+  let failed = 0
 
   for (const filePath of skillFiles) {
-    const isValid = validateSkillFile(filePath);
+    const isValid = validateSkillFile(filePath)
 
     if (isValid) {
-      passed++;
+      passed++
     } else {
-      failed++;
+      failed++
     }
 
-    console.log('─'.repeat(50) + '\n');
+    console.log('─'.repeat(50) + '\n')
   }
 
-  console.log('📈 批量验证结果:');
-  console.log(`✅ 通过: ${passed} 个文件`);
-  console.log(`❌ 失败: ${failed} 个文件`);
-  console.log(`📊 总计: ${skillFiles.length} 个文件`);
+  console.log('📈 批量验证结果:')
+  console.log(`✅ 通过: ${passed} 个文件`)
+  console.log(`❌ 失败: ${failed} 个文件`)
+  console.log(`📊 总计: ${skillFiles.length} 个文件`)
 
-  return failed === 0;
+  return failed === 0
 }
 
 // 主函数
 function main() {
-  const args = process.argv.slice(2);
+  const args = process.argv.slice(2)
 
   if (args.length === 0) {
-    console.log('📝 Skill.md 验证工具');
-    console.log('\n使用方法:');
-    console.log('  node validate-skill.js <skill-file-path>    验证单个文件');
-    console.log('  node validate-skill.js --dir <directory>    验证目录下的所有文件');
-    console.log('\n示例:');
-    console.log('  node validate-skill.js ./my-skill.skill.md');
-    console.log('  node validate-skill.js --dir ./.claude/skills');
-    return;
+    console.log('📝 Skill.md 验证工具')
+    console.log('\n使用方法:')
+    console.log('  node validate-skill.js <skill-file-path>    验证单个文件')
+    console.log('  node validate-skill.js --dir <directory>    验证目录下的所有文件')
+    console.log('\n示例:')
+    console.log('  node validate-skill.js ./my-skill.skill.md')
+    console.log('  node validate-skill.js --dir ./.claude/skills')
+    return
   }
 
   if (args[0] === '--dir' || args[0] === '-d') {
-    const dirPath = args[1] || '.';
-    validateSkillDirectory(dirPath);
+    const dirPath = args[1] || '.'
+    validateSkillDirectory(dirPath)
   } else {
-    const filePath = args[0];
-    validateSkillFile(filePath);
+    const filePath = args[0]
+    validateSkillFile(filePath)
   }
 }
 
 // 执行
 if (require.main === module) {
-  main();
+  main()
 }
 
 module.exports = {
   validateSkillFile,
   validateSkillDirectory,
+  collectSkillFiles,
   REQUIRED_SECTIONS,
-  RECOMMENDED_SECTIONS
-};
+  RECOMMENDED_SECTIONS,
+}

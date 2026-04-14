@@ -90,9 +90,7 @@ export default function Layout({ children }: Props) {
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center py-1 px-3 ${
-                  pathname === item.href
-                    ? 'text-blue-600'
-                    : 'text-gray-500 dark:text-gray-400'
+                  pathname === item.href ? 'text-blue-600' : 'text-gray-500 dark:text-gray-400'
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>

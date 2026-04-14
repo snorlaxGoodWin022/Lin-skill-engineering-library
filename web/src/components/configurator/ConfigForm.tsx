@@ -12,22 +12,23 @@ interface Props {
   onFieldsChange: (fields: FieldDefinition[]) => void
 }
 
-export default function ConfigForm({ fields, values, dynamicFields, onValueChange, onFieldsChange }: Props) {
+export default function ConfigForm({
+  fields,
+  values,
+  dynamicFields,
+  onValueChange,
+  onFieldsChange,
+}: Props) {
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-medium text-gray-900 dark:text-white">
-        填写配置
-      </h3>
+      <h3 className="text-base font-medium text-gray-900 dark:text-white">填写配置</h3>
 
       {fields.map((field) => {
         // 动态字段列表
         if (field.type === 'fields-list') {
           return (
             <div key={field.key}>
-              <FieldEditor
-                fields={dynamicFields}
-                onChange={onFieldsChange}
-              />
+              <FieldEditor fields={dynamicFields} onChange={onFieldsChange} />
             </div>
           )
         }
@@ -69,7 +70,9 @@ export default function ConfigForm({ fields, values, dynamicFields, onValueChang
                 className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
               >
                 {field.options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
                 ))}
               </select>
             )}

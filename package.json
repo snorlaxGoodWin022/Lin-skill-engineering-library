@@ -1,0 +1,36 @@
+{
+  "name": "skill-library",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI Skill.md 库 - 收集和管理 AI 工作手册",
+  "scripts": {
+    "validate": "node tools/validate-skill.js",
+    "validate:all": "node tools/validate-skill.js --dir .claude/skills",
+    "generate": "node tools/generate-skill.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write \"tools/**/*.js\"",
+    "format:check": "prettier --check \"tools/**/*.js\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.2",
+    "vitest": "^4.1.3"
+  },
+  "lint-staged": {
+    "tools/**/*.js": [
+      "prettier --write"
+    ],
+    "web/src/**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "web/tests/**/*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

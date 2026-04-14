@@ -53,7 +53,10 @@ export default function FieldEditor({ fields, onChange }: Props) {
 
       <div className="space-y-2">
         {fields.map((field, index) => (
-          <div key={index} className="flex gap-2 items-start p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <div
+            key={index}
+            className="flex gap-2 items-start p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+          >
             {/* 字段名 */}
             <input
               type="text"
@@ -77,7 +80,9 @@ export default function FieldEditor({ fields, onChange }: Props) {
               className="px-2 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               {FIELD_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
               ))}
             </select>
             {/* 必填 */}

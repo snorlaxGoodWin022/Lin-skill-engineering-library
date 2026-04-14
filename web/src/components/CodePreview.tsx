@@ -26,10 +26,7 @@ export default function CodePreview({ code, language = 'markdown' }: Props) {
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 bg-gray-50 border-b border-gray-200">
         <span className="text-sm text-gray-500">{language}</span>
-        <button
-          onClick={handleCopy}
-          className="text-sm text-gray-500 hover:text-gray-700"
-        >
+        <button onClick={handleCopy} className="text-sm text-gray-500 hover:text-gray-700">
           {copied ? '已复制 ✓' : '复制'}
         </button>
       </div>

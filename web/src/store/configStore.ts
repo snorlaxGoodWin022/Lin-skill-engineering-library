@@ -43,8 +43,7 @@ export const useConfigStore = create<ConfigState>((set) => ({
   setFramework: (framework) => set({ framework, step: 3 }),
 
   values: {},
-  setFieldValue: (key, value) =>
-    set((state) => ({ values: { ...state.values, [key]: value } })),
+  setFieldValue: (key, value) => set((state) => ({ values: { ...state.values, [key]: value } })),
 
   fields: [],
   setFields: (fields) => set({ fields }),
@@ -52,11 +51,7 @@ export const useConfigStore = create<ConfigState>((set) => ({
   resetConfig: () => set(initialState),
 
   importConfig: (parsed) => {
-    const step = parsed.templateType && parsed.framework
-      ? 3
-      : parsed.templateType
-      ? 2
-      : 1
+    const step = parsed.templateType && parsed.framework ? 3 : parsed.templateType ? 2 : 1
     set({
       step,
       templateType: parsed.templateType,

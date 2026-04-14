@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { getSkillFilenames, getSkill, getAllSkills, filterByFramework, filterByCategory, searchSkills } from '@/lib/skill-loader'
+import {
+  getSkillFilenames,
+  getSkill,
+  getAllSkills,
+  filterByFramework,
+  filterByCategory,
+  searchSkills,
+} from '@/lib/skill-loader'
 
 describe('skill-loader', () => {
   describe('getSkillFilenames', () => {
@@ -11,7 +18,7 @@ describe('skill-loader', () => {
 
     it('应该只返回 .md 文件', () => {
       const filenames = getSkillFilenames()
-      filenames.forEach(name => {
+      filenames.forEach((name) => {
         expect(name.endsWith('.md')).toBe(true)
       })
     })
@@ -52,7 +59,7 @@ describe('skill-loader', () => {
 
     it('应该按框架分组排序', () => {
       const skills = getAllSkills()
-      const frameworks = skills.map(s => s.meta.framework)
+      const frameworks = skills.map((s) => s.meta.framework)
 
       // react 应该在最前面
       const reactIndex = frameworks.indexOf('react')
@@ -73,7 +80,7 @@ describe('skill-loader', () => {
       const skills = getAllSkills()
       const reactSkills = filterByFramework(skills, 'react')
 
-      reactSkills.forEach(skill => {
+      reactSkills.forEach((skill) => {
         expect(skill.meta.framework).toBe('react')
       })
     })
@@ -90,7 +97,7 @@ describe('skill-loader', () => {
       const skills = getAllSkills()
       const formSkills = filterByCategory(skills, 'form')
 
-      formSkills.forEach(skill => {
+      formSkills.forEach((skill) => {
         expect(skill.meta.category).toBe('form')
       })
     })
@@ -108,7 +115,7 @@ describe('skill-loader', () => {
       const result = searchSkills(skills, 'form')
       expect(result.length).toBeGreaterThan(0)
 
-      result.forEach(skill => {
+      result.forEach((skill) => {
         const matches =
           skill.meta.title.toLowerCase().includes('form') ||
           skill.meta.description.toLowerCase().includes('form') ||

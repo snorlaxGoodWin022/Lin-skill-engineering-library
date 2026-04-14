@@ -22,22 +22,44 @@ export function generateMarkdown(config: SkillConfig): string {
 type TsType = 'string' | 'number' | 'boolean'
 
 const FIELD_TS_MAP: Record<string, TsType> = {
-  text: 'string', email: 'string', number: 'number', select: 'string',
-  date: 'string', boolean: 'boolean', textarea: 'string',
+  text: 'string',
+  email: 'string',
+  number: 'number',
+  select: 'string',
+  date: 'string',
+  boolean: 'boolean',
+  textarea: 'string',
 }
 
-function fwLabel(fw: string) { return fw === 'react' ? 'React' : 'Vue3' }
-function ext(fw: string) { return fw === 'react' ? 'tsx' : 'vue' }
-function hookLib(fw: string) { return fw === 'react' ? 'React Query' : 'Vue Query' }
-function uiLib(fw: string) { return fw === 'react' ? 'Ant Design 5.x' : 'Element Plus 2.4+' }
-function stateLib(fw: string) { return fw === 'react' ? 'Zustand' : 'Pinia' }
+function fwLabel(fw: string) {
+  return fw === 'react' ? 'React' : 'Vue3'
+}
+function ext(fw: string) {
+  return fw === 'react' ? 'tsx' : 'vue'
+}
+function hookLib(fw: string) {
+  return fw === 'react' ? 'React Query' : 'Vue Query'
+}
+function uiLib(fw: string) {
+  return fw === 'react' ? 'Ant Design 5.x' : 'Element Plus 2.4+'
+}
+function stateLib(fw: string) {
+  return fw === 'react' ? 'Zustand' : 'Pinia'
+}
 
-function fieldTs(f: FieldDefinition) { return FIELD_TS_MAP[f.type] || 'string' }
+function fieldTs(f: FieldDefinition) {
+  return FIELD_TS_MAP[f.type] || 'string'
+}
 
 function fieldToZod(f: FieldDefinition): string {
   const map: Record<string, string> = {
-    text: 'z.string()', email: 'z.string().email()', number: 'z.number().min(0)',
-    select: 'z.string()', date: 'z.string()', boolean: 'z.boolean()', textarea: 'z.string()',
+    text: 'z.string()',
+    email: 'z.string().email()',
+    number: 'z.number().min(0)',
+    select: 'z.string()',
+    date: 'z.string()',
+    boolean: 'z.boolean()',
+    textarea: 'z.string()',
   }
   let base = map[f.type] || 'z.string()'
   if (f.required) base = base.replace(')', `.min(1, { message: '请输入${f.label}' })`)
@@ -46,11 +68,11 @@ function fieldToZod(f: FieldDefinition): string {
 }
 
 function renderFieldsTs(fields: FieldDefinition[], indent = '  ') {
-  return fields.map(f => `${indent}${f.name}${f.required ? '' : '?'}: ${fieldTs(f)}`).join('\n')
+  return fields.map((f) => `${indent}${f.name}${f.required ? '' : '?'}: ${fieldTs(f)}`).join('\n')
 }
 
 function renderFieldsTsFull(fields: FieldDefinition[]) {
-  return fields.map(f => `  ${f.name}: ${fieldTs(f)}`).join('\n')
+  return fields.map((f) => `  ${f.name}: ${fieldTs(f)}`).join('\n')
 }
 
 function renderApiPaths(base: string) {
@@ -66,8 +88,10 @@ function renderApiPaths(base: string) {
 // ===== Form Generator =====
 
 function generateForm(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.componentName || 'MyForm'
-  const desc = c.values.description || '表单组件', fields = c.fields
+  const fw = c.framework!,
+    name = c.values.componentName || 'MyForm'
+  const desc = c.values.description || '表单组件',
+    fields = c.fields
   const isReact = fw === 'react'
 
   return `# Skill: ${name} 表单生成器 (${fwLabel(fw)})
@@ -83,7 +107,8 @@ function generateForm(c: SkillConfig): string {
 ## 技术栈
 
 ### 核心依赖
-${isReact
+${
+  isReact
     ? `- react-hook-form（表单状态管理）
 - @hookform/resolvers/zod（Zod 校验集成）
 - zod（Schema 校验）
@@ -94,7 +119,7 @@ ${isReact
 - zod（Schema 校验）
 - element-plus 2.4+（UI 组件库）
 - TypeScript 5`
-  }
+}
 
 ### 表单原则
 1. **受控组件** - 所有表单项使用受控模式
@@ -141,7 +166,7 @@ export interface ${name}Props {
 import { z } from 'zod'
 
 export const ${name}Schema = z.object({
-${fields.map(f => fieldToZod(f)).join(',\n')}
+${fields.map((f) => fieldToZod(f)).join(',\n')}
 })
 
 export type ${name}SchemaType = z.infer<typeof ${name}Schema>
@@ -165,7 +190,8 @@ ${isReact ? renderFormReact(name, fields) : renderFormVue(name, fields)}
 
 \`\`\`typescript
 // ${name}.test.${ext(fw)}
-${isReact
+${
+  isReact
     ? `import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ${name} from '../${name}'
@@ -180,7 +206,7 @@ describe('${name}', () => {
     it('应该渲染所有表单字段', () => {
       render(<${name} onSubmit={mockOnSubmit} />)
 
-${fields.map(f => `      expect(screen.getByLabelText('${f.label}')).toBeInTheDocument()`).join('\n')}
+${fields.map((f) => `      expect(screen.getByLabelText('${f.label}')).toBeInTheDocument()`).join('\n')}
     })
 
     it('编辑模式应该预填充数据', () => {
@@ -214,7 +240,10 @@ ${fields.map(f => `      expect(screen.getByLabelText('${f.label}')).toBeInTheDo
       const user = userEvent.setup()
       render(<${name} onSubmit={mockOnSubmit} />)
 
-${fields.slice(0, 2).map(f => `      await user.type(screen.getByLabelText('${f.label}'), 'test${f.name}')`).join('\n')}
+${fields
+  .slice(0, 2)
+  .map((f) => `      await user.type(screen.getByLabelText('${f.label}'), 'test${f.name}')`)
+  .join('\n')}
       await user.click(screen.getByRole('button', { name: /提交/ }))
 
       await waitFor(() => {
@@ -223,7 +252,8 @@ ${fields.slice(0, 2).map(f => `      await user.type(screen.getByLabelText('${f.
     })
   })
 })`
-    : `// Vue3 测试参考 unit-test-vue3.skill.md`}
+    : `// Vue3 测试参考 unit-test-vue3.skill.md`
+}
 \`\`\`
 
 ## 使用示例
@@ -234,7 +264,7 @@ ${fields.slice(0, 2).map(f => `      await user.type(screen.getByLabelText('${f.
 生成 ${name} 表单组件。
 
 表单字段：
-${fields.map(f => `- ${f.label} (${f.type}${f.required ? ', 必填' : ', 选填'}${f.options ? `, 选项: ${f.options.join('/')}` : ''})`).join('\n')}
+${fields.map((f) => `- ${f.label} (${f.type}${f.required ? ', 必填' : ', 选填'}${f.options ? `, 选项: ${f.options.join('/')}` : ''})`).join('\n')}
 \`\`\`
 
 ### AI 输出
@@ -281,10 +311,16 @@ export default function ${name}({
 
   return (
     <Form {...FORM_ITEM_LAYOUT} onFinish={handleSubmit(onSubmit)}>
-${fields.map(f => {
+${fields
+  .map((f) => {
     const compMap: Record<string, string> = {
-      text: 'Input', email: 'Input', number: 'InputNumber',
-      select: 'Select', date: 'DatePicker', boolean: 'Switch', textarea: 'Input.TextArea',
+      text: 'Input',
+      email: 'Input',
+      number: 'InputNumber',
+      select: 'Select',
+      date: 'DatePicker',
+      boolean: 'Switch',
+      textarea: 'Input.TextArea',
     }
     const comp = compMap[f.type] || 'Input'
     const extra = f.type === 'textarea' ? ' rows={4}' : ''
@@ -294,9 +330,10 @@ ${fields.map(f => {
         validateStatus={errors.${f.name} ? 'error' : ''}
         help={errors.${f.name}?.message}
       >
-        <${comp}${extra} control={control} name="${f.name}" placeholder="请输入${f.label}"${f.type === 'select' && f.options ? ` options={[${f.options.map(o => `{ label: '${o}', value: '${o}' }`).join(', ')}]}` : ''} />
+        <${comp}${extra} control={control} name="${f.name}" placeholder="请输入${f.label}"${f.type === 'select' && f.options ? ` options={[${f.options.map((o) => `{ label: '${o}', value: '${o}' }`).join(', ')}]}` : ''} />
       </Form.Item>`
-  }).join('\n')}
+  })
+  .join('\n')}
 
       <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
         <Button type="primary" htmlType="submit" loading={loading}>
@@ -351,17 +388,24 @@ const onSubmit = handleSubmit((values) => {
 
 <template>
   <el-form label-width="100px" @submit.prevent="onSubmit">
-${fields.map(f => {
+${fields
+  .map((f) => {
     const compMap: Record<string, string> = {
-      text: 'el-input', email: 'el-input', number: 'el-input-number',
-      select: 'el-select', date: 'el-date-picker', boolean: 'el-switch', textarea: 'el-input',
+      text: 'el-input',
+      email: 'el-input',
+      number: 'el-input-number',
+      select: 'el-select',
+      date: 'el-date-picker',
+      boolean: 'el-switch',
+      textarea: 'el-input',
     }
     const comp = compMap[f.type] || 'el-input'
     const extra = f.type === 'textarea' ? ' type="textarea" :rows="4"' : ''
     return `    <el-form-item label="${f.label}" :error="errors['${f.name}']">
       <${comp}${extra} v-model="values.${f.name}" placeholder="请输入${f.label}" />
     </el-form-item>`
-  }).join('\n')}
+  })
+  .join('\n')}
 
     <el-form-item>
       <el-button type="primary" native-type="submit" :loading="loading">
@@ -377,10 +421,14 @@ ${fields.map(f => {
 // ===== CRUD Generator =====
 
 function generateCrud(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.moduleName || 'Item'
+  const fw = c.framework!,
+    name = c.values.moduleName || 'Item'
   const desc = c.values.description || '数据模块'
   const apiBase = c.values.apiBaseUrl || '/api/items'
-  const features = (c.values.features || '').split(',').map((s: string) => s.trim()).filter(Boolean)
+  const features = (c.values.features || '')
+    .split(',')
+    .map((s: string) => s.trim())
+    .filter(Boolean)
   const fields = c.fields
   const isReact = fw === 'react'
 
@@ -397,7 +445,8 @@ function generateCrud(c: SkillConfig): string {
 ## 技术栈
 
 ### 核心依赖
-${isReact
+${
+  isReact
     ? `- React 18 + TypeScript 5
 - Ant Design 5.x（UI 组件库）
 - @tanstack/react-query（数据请求与缓存）
@@ -408,7 +457,7 @@ ${isReact
 - @tanstack/vue-query（数据请求与缓存）
 - Pinia（全局状态管理）
 - Vue Router 4（路由）`
-  }
+}
 
 ## 文件结构规范
 
@@ -449,7 +498,10 @@ export interface ${name}ListParams {
   pageNum: number
   pageSize: number
   keyword?: string
-${fields.filter(f => f.type === 'select').map(f => `  ${f.name}?: string`).join('\n')}
+${fields
+  .filter((f) => f.type === 'select')
+  .map((f) => `  ${f.name}?: string`)
+  .join('\n')}
 }
 
 // 创建 ${name} 参数
@@ -459,7 +511,7 @@ ${renderFieldsTsFull(fields)}
 
 // 更新 ${name} 参数
 export interface Update${name}Params {
-${fields.map(f => `  ${f.name}?: ${fieldTs(f)}`).join('\n')}
+${fields.map((f) => `  ${f.name}?: ${fieldTs(f)}`).join('\n')}
 }
 
 // 分页响应
@@ -585,7 +637,7 @@ ${features.length ? `## 附加功能\n\n${features.map((f: string) => `- ${f}`).
 1. 完整的 TypeScript 类型定义
 2. API 请求函数层
 3. ${hookLib(fw)} Hooks（列表查询、详情查询、创建、更新、删除）
-4. 列表页（含分页、搜索${fields.some(f => f.type === 'select') ? '、筛选' : ''}）
+4. 列表页（含分页、搜索${fields.some((f) => f.type === 'select') ? '、筛选' : ''}）
 5. 详情页
 6. 新建/编辑页（复用表单组件）
 7. 表单组件（含 Zod 校验）
@@ -598,7 +650,7 @@ ${features.length ? `## 附加功能\n\n${features.map((f: string) => `- ${f}`).
 按 CRUD 模板生成 ${name} 模块。
 
 数据字段：
-${fields.map(f => `- ${f.label} (${f.name}): ${f.type}${f.required ? ', 必填' : ''}${f.options ? `, 选项: ${f.options.join('/')}` : ''}`).join('\n')}
+${fields.map((f) => `- ${f.label} (${f.name}): ${f.type}${f.required ? ', 必填' : ''}${f.options ? `, 选项: ${f.options.join('/')}` : ''}`).join('\n')}
 
 API 基础路径: ${apiBase}
 \`\`\`
@@ -620,7 +672,8 @@ API 基础路径: ${apiBase}
 // ===== API Generator =====
 
 function generateApi(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.moduleName || 'Item'
+  const fw = c.framework!,
+    name = c.values.moduleName || 'Item'
   const desc = c.values.description || 'API 模块'
   const apiBase = c.values.apiBaseUrl || '/api/items'
   const hasPagination = c.values.hasPagination !== false
@@ -676,7 +729,7 @@ ${renderFieldsTsFull(fields)}
 
 export interface ${name}ListParams {
   pageNum: number
-  pageSize: number${fields.some(f => f.type === 'text') ? '\n  keyword?: string' : ''}${hasPagination ? '' : '\n  // 无分页'}
+  pageSize: number${fields.some((f) => f.type === 'text') ? '\n  keyword?: string' : ''}${hasPagination ? '' : '\n  // 无分页'}
 }
 
 export interface Create${name}Params {
@@ -684,7 +737,7 @@ ${renderFieldsTsFull(fields)}
 }
 
 export interface Update${name}Params {
-${fields.map(f => `  ${f.name}?: ${fieldTs(f)}`).join('\n')}
+${fields.map((f) => `  ${f.name}?: ${fieldTs(f)}`).join('\n')}
 }
 \`\`\`
 
@@ -816,7 +869,7 @@ ${hasPagination ? '6. 列表接口支持分页参数' : ''}
 
 API 接口：${apiBase}
 实体字段：
-${fields.map(f => `- ${f.name} (${f.type}): ${f.label}`).join('\n')}
+${fields.map((f) => `- ${f.name} (${f.type}): ${f.label}`).join('\n')}
 \`\`\`
 
 ### AI 输出
@@ -833,7 +886,8 @@ ${fields.map(f => `- ${f.name} (${f.type}): ${f.label}`).join('\n')}
 // ===== Unit Test Generator =====
 
 function generateUnitTest(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.targetName || 'Component'
+  const fw = c.framework!,
+    name = c.values.targetName || 'Component'
   const desc = c.values.description || '测试目标'
   const testType = c.values.componentType || 'component'
   const cases = (c.values.testCases || '').split('\n').filter((s: string) => s.trim())
@@ -844,19 +898,26 @@ function generateUnitTest(c: SkillConfig): string {
 ## 使用场景
 
 为 ${name}（${desc}）生成规范的单元测试代码，适用于：
-${testType === 'component' ? `- 组件渲染测试
+${
+  testType === 'component'
+    ? `- 组件渲染测试
 - 用户交互测试
 - 表单校验测试
-- 加载/错误状态测试` : testType === 'hook' ? `- Hook 初始状态测试
+- 加载/错误状态测试`
+    : testType === 'hook'
+      ? `- Hook 初始状态测试
 - Hook 方法调用测试
-- Hook 边界情况测试` : `- 函数输入输出测试
+- Hook 边界情况测试`
+      : `- 函数输入输出测试
 - 边界值测试
-- 错误处理测试`}
+- 错误处理测试`
+}
 
 ## 技术栈
 
 ### 核心依赖
-${isReact
+${
+  isReact
     ? `- Jest 29+（测试框架）
 - @testing-library/react（React 测试工具）
 - @testing-library/user-event（用户交互模拟）
@@ -864,7 +925,7 @@ ${isReact
     : `- Vitest（测试框架）
 - @vue/test-utils（Vue 测试工具）
 - @testing-library/jest-dom（DOM 断言扩展）`
-  }
+}
 
 ### 测试原则
 1. **测试行为而非实现** - 关注用户能看到和操作的内容
@@ -887,12 +948,16 @@ src/
 
 \`\`\`typescript
 // ${name}.test.${isReact ? 'tsx' : 'ts'}
-${isReact ? `import { render, screen${testType === 'component' ? ', waitFor' : ''}} from '@testing-library/react'
+${
+  isReact
+    ? `import { render, screen${testType === 'component' ? ', waitFor' : ''}} from '@testing-library/react'
 ${testType === 'component' ? "import userEvent from '@testing-library/user-event'" : "import { renderHook, act } from '@testing-library/react'"}
 import ${name} from '../index'
 
 describe('${name}', () => {
-${testType === 'component' ? `  describe('渲染', () => {
+${
+  testType === 'component'
+    ? `  describe('渲染', () => {
     it('应该正确渲染组件', () => {
       render(<${name} />)
 ${cases.length > 0 ? cases.map((c: string) => `      // ${c.trim()}`).join('\n') : '      expect(screen.getByRole(/.*/)).toBeInTheDocument()'}
@@ -905,7 +970,9 @@ ${cases.length > 0 ? cases.map((c: string) => `      // ${c.trim()}`).join('\n')
       render(<${name} />)
       // TODO: 模拟用户操作
     })
-  })` : testType === 'hook' ? `  describe('初始状态', () => {
+  })`
+    : testType === 'hook'
+      ? `  describe('初始状态', () => {
     it('应该有正确的初始值', () => {
       const { result } = renderHook(() => ${name}())
       // TODO: 断言初始状态
@@ -920,7 +987,8 @@ ${cases.length > 0 ? cases.map((c: string) => `      // ${c.trim()}`).join('\n')
       })
       // TODO: 断言状态变更
     })
-  })` : `  describe('功能测试', () => {
+  })`
+      : `  describe('功能测试', () => {
     it('应该正确处理正常输入', () => {
       // TODO: 测试正常输入
     })
@@ -932,16 +1000,23 @@ ${cases.length > 0 ? cases.map((c: string) => `      // ${c.trim()}`).join('\n')
     it('应该正确处理错误输入', () => {
       // TODO: 测试错误处理
     })
-  })`}
+  })`
+}
 })
-` : `// Vue3 测试参考 unit-test-vue3.skill.md`}
+`
+    : `// Vue3 测试参考 unit-test-vue3.skill.md`
+}
 \`\`\`
 
-${cases.length > 0 ? `## 需要覆盖的测试场景
+${
+  cases.length > 0
+    ? `## 需要覆盖的测试场景
 
 ${cases.map((c: string, i: number) => `${i + 1}. ${c.trim()}`).join('\n')}
 
-` : ''}## 输出要求
+`
+    : ''
+}## 输出要求
 
 生成单元测试时必须：
 1. 使用 ${isReact ? '@testing-library/react' : '@vue/test-utils'} 进行测试
@@ -971,9 +1046,10 @@ ${cases.length ? `测试场景:\n${cases.map((c: string) => `- ${c.trim()}`).joi
 // ===== Hooks Generator =====
 
 function generateHooks(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.hookName || 'useMyHook'
+  const fw = c.framework!,
+    name = c.values.hookName || 'useMyHook'
   const desc = c.values.description || '自定义 Hook'
-  const params = c.fields.filter(f => f.name)
+  const params = c.fields.filter((f) => f.name)
   const isReact = fw === 'react'
   const hookType = isReact ? 'Hook' : 'Composable'
 
@@ -982,17 +1058,18 @@ function generateHooks(c: SkillConfig): string {
 ## 使用场景
 
 ${desc}，适用于：
-${params.length > 0 ? params.map(p => `- ${p.label} 相关逻辑封装`).join('\n') : '- 业务逻辑复用\n- 状态逻辑提取'}
+${params.length > 0 ? params.map((p) => `- ${p.label} 相关逻辑封装`).join('\n') : '- 业务逻辑复用\n- 状态逻辑提取'}
 
 ## 技术栈
 
 ### 核心依赖
-${isReact
+${
+  isReact
     ? `- React 18（useState, useEffect, useCallback, useMemo, useRef）
 - TypeScript 5`
     : `- Vue 3.4+（ref, computed, watch, onMounted, onUnmounted）
 - TypeScript 5`
-  }
+}
 
 ## 文件结构规范
 
@@ -1010,9 +1087,13 @@ src/${isReact ? 'hooks' : 'composables'}/
 
 \`\`\`typescript
 // types.ts
-${params.length > 0 ? `export interface ${name}Params {
-${params.map(p => `  ${p.name}${p.required ? '' : '?'}: ${fieldTs(p)}`).join('\n')}
-}` : '// 无参数'}
+${
+  params.length > 0
+    ? `export interface ${name}Params {
+${params.map((p) => `  ${p.name}${p.required ? '' : '?'}: ${fieldTs(p)}`).join('\n')}
+}`
+    : '// 无参数'
+}
 
 export interface ${name}Return {
   // TODO: 定义返回值类型
@@ -1023,7 +1104,8 @@ export interface ${name}Return {
 
 \`\`\`typescript
 // ${name}.ts
-${isReact
+${
+  isReact
     ? `import { useState, useCallback } from 'react'
 ${params.length > 0 ? `import type { ${name}Params } from './types'` : ''}
 
@@ -1060,14 +1142,15 @@ export function ${name}(${params.length > 0 ? `params: ${name}Params` : ''}) {
     action,
   }
 }`
-  }
+}
 \`\`\`
 
 ## 测试用例
 
 \`\`\`typescript
 // ${name}.test.ts
-${isReact
+${
+  isReact
     ? `import { renderHook, act } from '@testing-library/react'
 import { ${name} } from '../${name}'
 
@@ -1087,7 +1170,8 @@ describe('${name}', () => {
     })
   })
 })`
-    : `// Vue3 测试参考 unit-test-vue3.skill.md`}
+    : `// Vue3 测试参考 unit-test-vue3.skill.md`
+}
 \`\`\`
 
 ## 输出要求
@@ -1106,7 +1190,7 @@ describe('${name}', () => {
 \`\`\`
 生成 ${name} ${hookType}。
 ${desc}
-${params.length > 0 ? `参数:\n${params.map(p => `- ${p.name}: ${p.label} (${p.type})`).join('\n')}` : ''}
+${params.length > 0 ? `参数:\n${params.map((p) => `- ${p.name}: ${p.label} (${p.type})`).join('\n')}` : ''}
 \`\`\`
 
 ### AI 输出
@@ -1122,9 +1206,11 @@ ${params.length > 0 ? `参数:\n${params.map(p => `- ${p.name}: ${p.label} (${p.
 // ===== State Generator =====
 
 function generateState(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.storeName || 'useMyStore'
+  const fw = c.framework!,
+    name = c.values.storeName || 'useMyStore'
   const desc = c.values.description || '状态管理'
-  const fields = c.fields, persist = c.values.persist
+  const fields = c.fields,
+    persist = c.values.persist
   const isReact = fw === 'react'
   const s: string[] = []
 
@@ -1133,7 +1219,7 @@ function generateState(c: SkillConfig): string {
   s.push('## 使用场景')
   s.push('')
   s.push(`${desc}，适用于：`)
-  fields.forEach(f => s.push(`- ${f.label} 状态管理`))
+  fields.forEach((f) => s.push(`- ${f.label} 状态管理`))
   s.push('')
   s.push('## 技术栈')
   s.push('')
@@ -1161,10 +1247,10 @@ function generateState(c: SkillConfig): string {
     s.push('')
     s.push(`interface ${name}State {`)
     s.push('  // 状态')
-    fields.forEach(f => s.push(`  ${f.name}: ${fieldTs(f)}`))
+    fields.forEach((f) => s.push(`  ${f.name}: ${fieldTs(f)}`))
     s.push('')
     s.push('  // Actions')
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const setter = 'set' + f.name.charAt(0).toUpperCase() + f.name.slice(1)
       s.push(`  ${setter}: (value: ${fieldTs(f)}) => void`)
     })
@@ -1172,10 +1258,14 @@ function generateState(c: SkillConfig): string {
     s.push('}')
     s.push('')
     s.push('const initialState = {')
-    s.push(fields.map(f => {
-      const val = f.type === 'boolean' ? 'false' : f.type === 'number' ? '0' : "''"
-      return `  ${f.name}: ${val}`
-    }).join(',\n'))
+    s.push(
+      fields
+        .map((f) => {
+          const val = f.type === 'boolean' ? 'false' : f.type === 'number' ? '0' : "''"
+          return `  ${f.name}: ${val}`
+        })
+        .join(',\n')
+    )
     s.push('}')
     s.push('')
     s.push(`export const ${name} = create<${name}State>()(`)
@@ -1185,7 +1275,7 @@ function generateState(c: SkillConfig): string {
     s.push('    (set) => ({')
     s.push('      ...initialState,')
     s.push('')
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const setter = 'set' + f.name.charAt(0).toUpperCase() + f.name.slice(1)
       s.push(`      ${setter}: (value) => set({ ${f.name}: value }),`)
     })
@@ -1202,15 +1292,21 @@ function generateState(c: SkillConfig): string {
     s.push("import { defineStore } from 'pinia'")
     s.push('')
     s.push(`interface ${name}State {`)
-    fields.forEach(f => s.push(`  ${f.name}: ${fieldTs(f)}`))
+    fields.forEach((f) => s.push(`  ${f.name}: ${fieldTs(f)}`))
     s.push('}')
     s.push('')
-    s.push(`export const ${storeName} = defineStore('${storeName.replace(/^use/, '').toLowerCase()}', {`)
+    s.push(
+      `export const ${storeName} = defineStore('${storeName.replace(/^use/, '').toLowerCase()}', {`
+    )
     s.push(`  state: (): ${name}State => ({`)
-    s.push(fields.map(f => {
-      const val = f.type === 'boolean' ? 'false' : f.type === 'number' ? '0' : "''"
-      return `    ${f.name}: ${val}`
-    }).join(',\n'))
+    s.push(
+      fields
+        .map((f) => {
+          const val = f.type === 'boolean' ? 'false' : f.type === 'number' ? '0' : "''"
+          return `    ${f.name}: ${val}`
+        })
+        .join(',\n')
+    )
     s.push('  }),')
     s.push('')
     s.push('  getters: {')
@@ -1218,7 +1314,7 @@ function generateState(c: SkillConfig): string {
     s.push('  },')
     s.push('')
     s.push('  actions: {')
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const setter = 'set' + f.name.charAt(0).toUpperCase() + f.name.slice(1)
       s.push(`    ${setter}(value: ${fieldTs(f)}) {`)
       s.push(`      this.${f.name} = value`)
@@ -1226,7 +1322,7 @@ function generateState(c: SkillConfig): string {
     })
     s.push('')
     s.push('    reset() {')
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const val = f.type === 'boolean' ? 'false' : f.type === 'number' ? '0' : "''"
       s.push(`      this.${f.name} = ${val}`)
     })
@@ -1262,7 +1358,7 @@ function generateState(c: SkillConfig): string {
   s.push('```')
   s.push(`生成 ${name} Store。`)
   s.push('状态字段：')
-  fields.forEach(f => s.push(`- ${f.name} (${f.label}): ${f.type}`))
+  fields.forEach((f) => s.push(`- ${f.name} (${f.label}): ${f.type}`))
   if (persist) s.push('需要持久化到 localStorage')
   s.push('```')
   s.push('')
@@ -1278,14 +1374,19 @@ function generateState(c: SkillConfig): string {
 // ===== Utils Generator =====
 
 function generateUtils(c: SkillConfig): string {
-  const fw = c.framework!, name = c.values.functionName || 'myUtil'
+  const fw = c.framework!,
+    name = c.values.functionName || 'myUtil'
   const desc = c.values.description || '工具函数'
   const category = c.values.category || 'string'
-  const params = c.fields.filter(f => f.name)
+  const params = c.fields.filter((f) => f.name)
 
   const catLabels: Record<string, string> = {
-    string: '字符串处理', number: '数字处理', date: '日期处理',
-    validate: '数据校验', url: 'URL 处理', storage: '本地存储',
+    string: '字符串处理',
+    number: '数字处理',
+    date: '日期处理',
+    validate: '数据校验',
+    url: 'URL 处理',
+    storage: '本地存储',
   }
 
   return `# Skill: ${name} 工具函数
@@ -1317,9 +1418,13 @@ src/utils/
 
 \`\`\`typescript
 // types.ts
-${params.length > 0 ? `export interface ${name}Options {
-${params.map(p => `  ${p.name}${p.required ? '' : '?'}: ${fieldTs(p)} // ${p.label}`).join('\n')}
-}` : '// 根据函数签名定义参数类型'}
+${
+  params.length > 0
+    ? `export interface ${name}Options {
+${params.map((p) => `  ${p.name}${p.required ? '' : '?'}: ${fieldTs(p)} // ${p.label}`).join('\n')}
+}`
+    : '// 根据函数签名定义参数类型'
+}
 \`\`\`
 
 ## 函数实现
@@ -1374,7 +1479,7 @@ describe('${name}', () => {
 生成 ${name} 工具函数。
 ${desc}
 分类: ${catLabels[category] || '通用'}
-${params.length > 0 ? `参数:\n${params.map(p => `- ${p.name} (${p.label}): ${p.type}`).join('\n')}` : ''}
+${params.length > 0 ? `参数:\n${params.map((p) => `- ${p.name} (${p.label}): ${p.type}`).join('\n')}` : ''}
 \`\`\`
 
 ### AI 输出
