@@ -33,8 +33,8 @@ export function getSkillFilenames(): string[] {
         if (stat.isDirectory()) {
           readDirRecursive(fullPath)
         } else if (item.endsWith('.md') && item !== 'readme.md') {
-          // 存储相对于 skills 目录的路径，如 "react/form-generator-react.skill.md"
-          files.push(path.relative(dir, fullPath))
+          // 存储相对于 skills 目录的路径，统一用正斜杠
+          files.push(path.relative(dir, fullPath).replace(/\\/g, '/'))
         }
       }
     }

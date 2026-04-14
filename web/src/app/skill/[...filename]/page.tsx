@@ -1,15 +1,16 @@
-// app/skill/[filename]/page.tsx
+// app/skill/[...filename]/page.tsx
 import { getSkill } from '@/lib/skill-loader'
 import SkillDetailClient from './SkillDetailClient'
 import { notFound } from 'next/navigation'
 
 interface Props {
-  params: Promise<{ filename: string }>
+  params: Promise<{ filename: string[] }>
 }
 
 export default async function SkillDetailPage({ params }: Props) {
   const { filename } = await params
-  const skill = getSkill(filename)
+  const filepath = filename.join('/')
+  const skill = getSkill(filepath)
 
   if (!skill) {
     notFound()

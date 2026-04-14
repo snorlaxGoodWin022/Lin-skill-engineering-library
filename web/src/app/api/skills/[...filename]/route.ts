@@ -1,10 +1,14 @@
-// app/api/skills/[filename]/route.ts
+// app/api/skills/[...filename]/route.ts
 import { NextResponse } from 'next/server'
 import { getSkill } from '@/lib/skill-loader'
 
-export async function GET(request: Request, { params }: { params: Promise<{ filename: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ filename: string[] }> }
+) {
   const { filename } = await params
-  const skill = getSkill(filename)
+  const filepath = filename.join('/')
+  const skill = getSkill(filepath)
 
   if (!skill) {
     return NextResponse.json({ error: 'Skill not found' }, { status: 404 })
