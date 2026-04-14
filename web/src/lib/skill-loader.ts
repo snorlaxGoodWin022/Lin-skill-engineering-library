@@ -19,12 +19,29 @@ const getSkillsDir = () => {
 }
 
 /**
- * 获取所有 Skill 文件名
+ * 获取所有 Skill 文件名（递归读取子目录）
  */
 export function getSkillFilenames(): string[] {
   try {
     const dir = getSkillsDir()
-    return fs.readdirSync(dir).filter((file) => file.endsWith('.md') && file !== 'readme.md')
+    const files: string[] = []
+
+    const readDirRecursive = (currentDir: string) => {
+      const items = fs.readdirSync(currentDir)
+      for (const item of items) {
+        const fullPath = path.join(currentDir, item)
+        const stat = fs.statSync(fullPath)
+        if (stat.isDirectory()) {
+          readDirRecursive(fullPath)
+        } else if (item.endsWith('.md') && item !== 'readme.md') {
+          // 存储相对于 skills 目录的路径，如 "react/form-generator-react.skill.md"
+          files.push(path.relative(dir, fullPath))
+        }
+      }
+    }
+
+    readDirRecursive(dir)
+    return files
   } catch {
     return []
   }
@@ -34,8 +51,14 @@ export function getSkillFilenames(): string[] {
  * 解析框架类型
  */
 function parseFramework(filename: string): 'react' | 'vue3' | 'common' {
-  if (filename.includes('-react')) return 'react'
-  if (filename.includes('-vue3')) return 'vue3'
+  // 统一用正斜杠处理，兼容 Windows 反斜杠
+  const normalized = filename.replace(/\\/g, '/')
+  if (normalized.startsWith('react/')) return 'react'
+  if (normalized.startsWith('vue3/')) return 'vue3'
+  if (normalized.startsWith('common/')) return 'common'
+  // 兜底：从文件名判断
+  if (normalized.includes('-react')) return 'react'
+  if (normalized.includes('-vue3')) return 'vue3'
   return 'common'
 }
 
@@ -43,10 +66,13 @@ function parseFramework(filename: string): 'react' | 'vue3' | 'common' {
  * 解析分类
  */
 function parseCategory(filename: string): string {
+  // 注意：performance 必须在 form 之前判断，因为 "performance" 包含 "form"
+  if (filename.includes('performance')) return 'performance'
   if (filename.includes('form')) return 'form'
   if (filename.includes('crud')) return 'crud'
   if (filename.includes('code-standard') || filename.includes('code-standrad')) return 'code'
   if (filename.includes('component')) return 'component'
+  // api-layer 必须在 api-test 之前，避免 "api-layer" 匹配到 "api"
   if (filename.includes('api-layer')) return 'api'
   if (filename.includes('unit-test')) return 'test'
   if (filename.includes('state')) return 'state'
@@ -54,6 +80,12 @@ function parseCategory(filename: string): string {
   if (filename.includes('router')) return 'router'
   if (filename.includes('utils')) return 'utils'
   if (filename.includes('typescript') || filename.includes('types')) return 'types'
+  if (filename.includes('permission')) return 'permission'
+  if (filename.includes('error-handler')) return 'error'
+  if (filename.includes('i18n')) return 'i18n'
+  if (filename.includes('cicd')) return 'cicd'
+  if (filename.includes('e2e')) return 'e2e'
+  if (filename.includes('api-test')) return 'api-test'
   return 'other'
 }
 

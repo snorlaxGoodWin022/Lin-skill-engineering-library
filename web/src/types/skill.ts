@@ -38,5 +38,12 @@ export const CATEGORY_LABELS: Record<string, string> = {
   router: '路由',
   utils: '工具',
   types: '类型',
+  permission: '权限控制',
+  performance: '性能优化',
+  error: '错误处理',
+  i18n: '国际化',
+  cicd: 'CI/CD',
+  e2e: 'E2E测试',
+  'api-test': 'API测试',
   other: '其他',
 }
