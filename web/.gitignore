@@ -38,9 +38,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-# build-time copied skills
-/skills-data/
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
