@@ -14,12 +14,25 @@
 const fs = require('fs');
 const path = require('path');
 
-// Skill.md 必需的部分
+// Skill.md 必需的部分（支持多种标题写法）
 const REQUIRED_SECTIONS = [
   '# Skill:',
-  '## 使用场景',
-  '## 技术栈约定',
   '## 输出要求'
+];
+
+// 使用场景标题的多种写法（满足任一即可）
+const USAGE_SCENARIO_VARIANTS = [
+  '## 使用场景',
+  '## 适用范围',
+  '## 适用场景',
+];
+
+// 技术栈标题的多种写法（满足任一即可）
+const TECH_STACK_VARIANTS = [
+  '## 技术栈约定',
+  '## 技术栈',
+  '## 技术依赖',
+  '## 核心依赖',
 ];
 
 // 建议的部分
@@ -58,6 +71,23 @@ function validateSkillFile(filePath) {
       missingRequired.push(section);
       hasErrors = true;
     }
+  }
+
+  // 检查使用场景部分（支持多种标题）
+  const hasUsageScenario = USAGE_SCENARIO_VARIANTS.some(v => content.includes(v));
+  if (hasUsageScenario) {
+    foundSections.push('## 使用场景');
+  } else {
+    missingRequired.push('## 使用场景');
+    hasErrors = true;
+  }
+
+  // 检查技术栈部分（建议有，但不阻止通过）
+  const hasTechStack = TECH_STACK_VARIANTS.some(v => content.includes(v));
+  if (hasTechStack) {
+    foundSections.push('## 技术栈');
+  } else {
+    missingRecommended.push('## 技术栈（或技术栈约定/核心依赖）');
   }
 
   // 检查建议部分
@@ -168,8 +198,30 @@ function validateSkillFile(filePath) {
   }
 }
 
+/**
+ * 递归收集目录下所有 .skill.md 文件
+ */
+function collectSkillFiles(dirPath) {
+  const results = [];
+
+  function walk(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(fullPath);
+      } else if (entry.name.endsWith('.skill.md')) {
+        results.push(fullPath);
+      }
+    }
+  }
+
+  walk(dirPath);
+  return results;
+}
+
 // 批量验证目录
-function validateSkillDirectory(dirPath) {
+function validateSkillDirectory(dirPath, recursive = true) {
   console.log(`📂 验证目录: ${dirPath}`);
 
   if (!fs.existsSync(dirPath)) {
@@ -177,8 +229,9 @@ function validateSkillDirectory(dirPath) {
     return;
   }
 
-  const files = fs.readdirSync(dirPath);
-  const skillFiles = files.filter(file => file.endsWith('.skill.md'));
+  const skillFiles = recursive
+    ? collectSkillFiles(dirPath)
+    : fs.readdirSync(dirPath).filter(f => f.endsWith('.skill.md')).map(f => path.join(dirPath, f));
 
   if (skillFiles.length === 0) {
     console.log('ℹ️  目录中没有找到 .skill.md 文件');
@@ -190,8 +243,7 @@ function validateSkillDirectory(dirPath) {
   let passed = 0;
   let failed = 0;
 
-  for (const file of skillFiles) {
-    const filePath = path.join(dirPath, file);
+  for (const filePath of skillFiles) {
     const isValid = validateSkillFile(filePath);
 
     if (isValid) {

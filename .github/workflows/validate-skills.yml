@@ -1,0 +1,29 @@
+name: Validate Skills
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - '.claude/skills/**'
+      - 'tools/validate-skill.js'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.claude/skills/**'
+      - 'tools/validate-skill.js'
+
+jobs:
+  validate:
+    name: Validate Skill Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate all skill files
+        run: node tools/validate-skill.js --dir .claude/skills
