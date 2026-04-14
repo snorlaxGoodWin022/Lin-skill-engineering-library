@@ -13,7 +13,7 @@ export default function SkillCard({ skill }: Props) {
   const router = useRouter()
 
   const handleClick = () => {
-    router.push(`/skill/${encodeURIComponent(skill.filename)}`)
+    router.push(`/skill/${skill.filename.split('/').map(encodeURIComponent).join('/')}`)
   }
 
   return (

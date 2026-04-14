@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { FRAMEWORK_LABELS, FRAMEWORK_COLORS, CATEGORY_LABELS } from '@/types/skill'
 import type { Skill } from '@/types/skill'
-import MarkdownRenderer from '@/components/MarkdownRenderer'
 
 interface Heading {
   id: string
@@ -24,25 +23,76 @@ function extractHeadings(content: string): Heading[] {
   while ((match = regex.exec(content)) !== null) {
     const level = match[1].length
     const text = match[2].trim()
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
-      .replace(/^-|-$/g, '')
+    const id = generateHeadingId(text)
     headings.push({ id, text, level })
   }
   return headings
 }
 
-/** 为 markdown 内容中的标题注入 id 锚点 */
-function injectHeadingIds(html: string): string {
-  return html.replace(/<h([23]) class="[^"]*">(.+?)<\/h[23]>/g, (match, level, text) => {
-    const id = text
-      .replace(/<[^>]+>/g, '')
-      .toLowerCase()
-      .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
-      .replace(/^-|-$/g, '')
-    return `<h${level} id="${id}" class="${match.includes('class="') ? match.match(/class="([^"]*)"/)?.[1] || '' : ''}">${text}</h${level}>`
+/** 从标题文本生成 DOM id */
+function generateHeadingId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+/** 简易 markdown → HTML，并为 h2/h3 注入 id */
+function renderMarkdownWithIds(content: string): string {
+  // 用占位符保护代码块
+  const codeBlocks: string[] = []
+  let result = content.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+    const idx = codeBlocks.length
+    // 简单转义 HTML
+    const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    codeBlocks.push(
+      `<pre class="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto my-4"><code>${escaped}</code></pre>`
+    )
+    return `%%CODEBLOCK_${idx}%%`
   })
+
+  // 行内代码
+  result = result.replace(/`([^`]+)`/g, (_, code) => {
+    return `<code class="bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded text-sm">${code}</code>`
+  })
+
+  // h3 (### )
+  result = result.replace(/^### (.+)$/gm, (_, text) => {
+    const id = generateHeadingId(text.replace(/<[^>]+>/g, ''))
+    return `<h3 id="${id}" class="text-lg font-semibold mt-6 mb-2 text-gray-900 dark:text-gray-100">${text}</h3>`
+  })
+
+  // h2 (## )
+  result = result.replace(/^## (.+)$/gm, (_, text) => {
+    const id = generateHeadingId(text.replace(/<[^>]+>/g, ''))
+    return `<h2 id="${id}" class="text-xl font-semibold mt-8 mb-3 text-gray-900 dark:text-gray-100">${text}</h2>`
+  })
+
+  // h1 (# )
+  result = result.replace(/^# (.+)$/gm, (_, text) => {
+    return `<h1 class="text-2xl font-bold mt-8 mb-4 text-gray-900 dark:text-gray-100">${text}</h1>`
+  })
+
+  // 粗体
+  result = result.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+
+  // 列表
+  result = result.replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
+  result = result.replace(/^(\d+)\. (.+)$/gm, '<li class="ml-4">$2</li>')
+
+  // 链接
+  result = result.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    '<a href="$2" class="text-blue-600 hover:underline">$1</a>'
+  )
+
+  // 段落
+  result = result.replace(/\n\n/g, '</p><p class="my-3 text-gray-700 dark:text-gray-300">')
+
+  // 恢复代码块
+  result = result.replace(/%%CODEBLOCK_(\d+)%%/g, (_, idx) => codeBlocks[parseInt(idx)])
+
+  return `<div class="prose prose-sm max-w-none dark:prose-invert"><p class="my-3 text-gray-700 dark:text-gray-300">${result}</p></div>`
 }
 
 export default function SkillDetailClient({ skill }: Props) {
@@ -50,6 +100,9 @@ export default function SkillDetailClient({ skill }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
 
   const headings = useMemo(() => extractHeadings(skill.content), [skill.content])
+
+  // 带有 id 的渲染 HTML
+  const renderedHtml = useMemo(() => renderMarkdownWithIds(skill.content), [skill.content])
 
   // IntersectionObserver 追踪当前可见标题
   useEffect(() => {
@@ -67,13 +120,13 @@ export default function SkillDetailClient({ skill }: Props) {
       { rootMargin: '-80px 0px -70% 0px', root: container }
     )
 
-    // 稍后观察（等待 markdown 渲染完成）
+    // 等待 DOM 渲染完成后观察
     const timer = setTimeout(() => {
       headings.forEach((h) => {
-        const el = document.getElementById(h.id)
+        const el = container.querySelector(`[id="${h.id}"]`)
         if (el) observer.observe(el)
       })
-    }, 100)
+    }, 200)
 
     return () => {
       clearTimeout(timer)
@@ -82,18 +135,18 @@ export default function SkillDetailClient({ skill }: Props) {
   }, [headings])
 
   const scrollToHeading = useCallback((id: string) => {
-    const el = document.getElementById(id)
+    const container = contentRef.current
+    if (!container) return
+
+    const el = container.querySelector(`[id="${id}"]`) as HTMLElement | null
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      // 计算目标在容器内的偏移量
+      const containerRect = container.getBoundingClientRect()
+      const elRect = el.getBoundingClientRect()
+      const scrollOffset = elRect.top - containerRect.top + container.scrollTop - 16
+      container.scrollTo({ top: scrollOffset, behavior: 'smooth' })
       setActiveId(id)
     }
-  }, [])
-
-  // 为渲染后的 HTML 注入 id
-  const renderedHtml = useMemo(() => {
-    // MarkdownRenderer 的输出中提取并注入 id
-    // 我们需要直接渲染带 id 的内容
-    return ''
   }, [])
 
   return (
@@ -145,7 +198,7 @@ export default function SkillDetailClient({ skill }: Props) {
                 <li key={h.id}>
                   <button
                     onClick={() => scrollToHeading(h.id)}
-                    className={`w-full text-left text-sm py-1 px-2 rounded transition truncate ${
+                    className={`w-full text-left text-sm py-1 px-2 rounded transition cursor-pointer truncate ${
                       h.level === 3 ? 'pl-5' : ''
                     } ${
                       activeId === h.id
@@ -162,39 +215,13 @@ export default function SkillDetailClient({ skill }: Props) {
         </nav>
 
         {/* 右侧内容 */}
-        <div ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto">
-            <SkillContentRenderer content={skill.content} headings={headings} />
-          </div>
+        <div ref={contentRef} className="flex-1 overflow-y-auto scroll-smooth">
+          <div
+            className="max-w-3xl mx-auto p-6"
+            dangerouslySetInnerHTML={{ __html: renderedHtml }}
+          />
         </div>
       </div>
-    </div>
-  )
-}
-
-/** 渲染 markdown 并为标题注入 id */
-function SkillContentRenderer({ content, headings }: { content: string; headings: Heading[] }) {
-  // 直接用 dangerouslySetInnerHTML 渲染 MarkdownRenderer 的输出
-  // 并为每个标题注入 id
-  const ref = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!ref.current) return
-    // 遍历 h2/h3 元素，注入 id
-    const h2s = ref.current.querySelectorAll('h2, h3')
-    h2s.forEach((el) => {
-      const text = el.textContent || ''
-      const id = text
-        .toLowerCase()
-        .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
-        .replace(/^-|-$/g, '')
-      el.id = id
-    })
-  }, [content])
-
-  return (
-    <div ref={ref}>
-      <MarkdownRenderer content={content} />
     </div>
   )
 }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node scripts/copy-skills.js && next dev",
+    "dev": "node scripts/copy-skills.js && next dev -p 8734",
     "prebuild": "node scripts/copy-skills.js",
     "build": "next build",
     "start": "next start",

@@ -126,7 +126,7 @@ export default function HomePage() {
               {skills.slice(0, 6).map((skill) => (
                 <Link
                   key={skill.filename}
-                  href={`/skill/${encodeURIComponent(skill.filename)}`}
+                  href={`/skill/${skill.filename.split('/').map(encodeURIComponent).join('/')}`}
                   className="flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition"
                 >
                   <div className="flex items-center gap-2 md:gap-3">
