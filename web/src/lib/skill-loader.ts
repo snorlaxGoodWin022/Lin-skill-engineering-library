@@ -3,19 +3,18 @@ import fs from 'fs'
 import path from 'path'
 import type { Skill, SkillMeta } from '@/types/skill'
 
-const SKILLS_DIR = path.join(process.cwd(), '..', '.claude', 'skills')
+// 技能文件目录：优先使用构建时复制的本地副本，其次使用项目原始路径
+const SKILLS_DIR_BUILD = path.join(process.cwd(), 'skills-data')
+const SKILLS_DIR_SRC = path.join(process.cwd(), '..', '.claude', 'skills')
 
-// 如果不存在，尝试另一个路径
 const getSkillsDir = () => {
-  if (fs.existsSync(SKILLS_DIR)) {
-    return SKILLS_DIR
+  if (fs.existsSync(SKILLS_DIR_BUILD)) {
+    return SKILLS_DIR_BUILD
   }
-  // 尝试相对于 web 目录的路径
-  const altPath = path.join(__dirname, '..', '..', '..', '..', '.claude', 'skills')
-  if (fs.existsSync(altPath)) {
-    return altPath
+  if (fs.existsSync(SKILLS_DIR_SRC)) {
+    return SKILLS_DIR_SRC
   }
-  return SKILLS_DIR
+  return SKILLS_DIR_SRC
 }
 
 /**
