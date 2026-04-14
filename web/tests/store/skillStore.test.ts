@@ -17,6 +17,7 @@ const mockSkill: Skill = {
   content: '# Skill: 表单生成器\n\n## 使用场景\n\n测试内容',
   meta: {
     title: '表单生成器',
+    description: '生成表单组件',
     framework: 'react',
     category: 'form',
   },

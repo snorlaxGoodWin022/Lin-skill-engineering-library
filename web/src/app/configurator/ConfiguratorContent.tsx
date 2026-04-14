@@ -1,225 +1,222 @@
 // app/configurator/ConfiguratorContent.tsx
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useConfigStore } from '@/store/configStore'
-import { TEMPLATE_SCHEMAS } from '@/lib/template-schemas'
-import { generateMarkdown } from '@/lib/template-generator'
+import { getAllSkills } from '@/lib/skill-loader'
+import { FRAMEWORK_LABELS, FRAMEWORK_COLORS, CATEGORY_LABELS } from '@/types/skill'
+import type { Skill } from '@/types/skill'
 import Layout from '@/components/Layout'
 import MonacoEditor from '@/components/MonacoEditor'
-import TemplateSelector from '@/components/configurator/TemplateSelector'
-import FrameworkSelector from '@/components/configurator/FrameworkSelector'
-import ConfigForm from '@/components/configurator/ConfigForm'
-import ImportDialog from '@/components/configurator/ImportDialog'
-import type { ParsedSkill } from '@/types/configurator'
 
 export default function ConfiguratorContent() {
+  const searchParams = useSearchParams()
   const {
-    step,
-    setStep,
-    templateType,
-    setTemplateType,
-    framework,
-    setFramework,
-    values,
-    setFieldValue,
-    fields,
-    setFields,
-    resetConfig,
-    importConfig,
+    selectedSkillFilename,
+    markdownContent,
+    searchQuery,
+    frameworkFilter,
+    setSelectedSkillFilename,
+    setMarkdownContent,
+    setSearchQuery,
+    setFrameworkFilter,
   } = useConfigStore()
 
   const [copied, setCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState<'config' | 'preview'>('config')
-  const [showImport, setShowImport] = useState(false)
+  const [skills, setSkills] = useState<Skill[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const schema = templateType ? TEMPLATE_SCHEMAS[templateType] : null
+  // 加载技能列表
+  useEffect(() => {
+    fetch('/api/skills')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.skills) setSkills(data.skills)
+      })
+      .catch(console.error)
+  }, [])
 
-  // 实时生成 Markdown
-  const markdown = useMemo(() => {
-    if (!templateType || !framework) return ''
-    return generateMarkdown({ templateType, framework, values, fields })
-  }, [templateType, framework, values, fields])
+  // URL 参数预选
+  useEffect(() => {
+    const skillParam = searchParams.get('skill')
+    if (skillParam) {
+      loadSkillContent(skillParam)
+    }
+  }, [searchParams])
 
-  // 复制
+  const loadSkillContent = async (filename: string) => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/skills/${filename}`)
+      const data = await res.json()
+      if (data.skill) {
+        setSelectedSkillFilename(filename)
+        setMarkdownContent(data.skill.content)
+      }
+    } catch (err) {
+      console.error('加载技能失败:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 筛选技能
+  const filteredSkills = useMemo(() => {
+    let result = skills
+    if (frameworkFilter !== 'all') {
+      result = result.filter((s) => s.meta.framework === frameworkFilter)
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter(
+        (s) =>
+          s.meta.title.toLowerCase().includes(q) || s.meta.description.toLowerCase().includes(q)
+      )
+    }
+    return result
+  }, [skills, frameworkFilter, searchQuery])
+
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(markdown)
+    await navigator.clipboard.writeText(markdownContent)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  // 下载
   const handleDownload = () => {
-    const blob = new Blob([markdown], { type: 'text/markdown' })
+    const blob = new Blob([markdownContent], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${values.componentName || values.moduleName || values.hookName || values.functionName || values.targetName || values.storeName || 'skill'}.skill.md`
+    a.download = selectedSkillFilename || 'skill.md'
     a.click()
     URL.revokeObjectURL(url)
   }
 
-  const steps = [
-    { num: 1, label: '选择模板' },
-    { num: 2, label: '选择框架' },
-    { num: 3, label: '填写配置' },
+  const frameworkTabs = [
+    { value: 'all', label: '全部' },
+    { value: 'react', label: 'React' },
+    { value: 'vue3', label: 'Vue3' },
+    { value: 'common', label: '通用' },
   ]
 
   return (
     <Layout>
       <div className="h-[calc(100vh-56px)] flex flex-col md:flex-row">
-        {/* 左侧：配置面板 */}
-        <div className="w-full md:w-[420px] border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col">
-          {/* 步骤指示器 */}
-          <div className="flex items-center border-b border-gray-200 dark:border-gray-700 px-4 py-2">
-            {steps.map((s, i) => (
-              <div key={s.num} className="flex items-center">
-                <button
-                  onClick={() => s.num <= step && setStep(s.num)}
-                  className={`flex items-center gap-1.5 px-2 py-1 rounded text-sm transition ${
-                    step === s.num
-                      ? 'text-blue-600 dark:text-blue-400 font-medium'
-                      : s.num < step
-                        ? 'text-blue-500 dark:text-blue-500 cursor-pointer'
-                        : 'text-gray-400 dark:text-gray-500'
-                  }`}
-                >
+        {/* 左侧：技能选择列表 */}
+        <div className="w-full md:w-[320px] border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex flex-col">
+          {/* 搜索框 */}
+          <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+            <input
+              type="text"
+              placeholder="搜索技能..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+          </div>
+
+          {/* 框架筛选 */}
+          <div className="flex px-3 pt-2 pb-1 gap-1">
+            {frameworkTabs.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setFrameworkFilter(tab.value)}
+                className={`px-2 py-1 text-xs rounded-md transition ${
+                  frameworkFilter === tab.value
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 font-medium'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 技能列表 */}
+          <div className="flex-1 overflow-y-auto">
+            {filteredSkills.map((skill) => (
+              <button
+                key={skill.filename}
+                onClick={() => loadSkillContent(skill.filename)}
+                className={`w-full text-left px-3 py-2.5 border-b border-gray-100 dark:border-gray-700 transition ${
+                  selectedSkillFilename === skill.filename
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-l-2 border-l-blue-600'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {skill.meta.title}
+                  </span>
                   <span
-                    className={`w-5 h-5 rounded-full text-xs flex items-center justify-center ${
-                      step === s.num
-                        ? 'bg-blue-600 text-white'
-                        : s.num < step
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400'
+                    className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                      FRAMEWORK_COLORS[skill.meta.framework]
                     }`}
                   >
-                    {s.num < step ? '✓' : s.num}
+                    {FRAMEWORK_LABELS[skill.meta.framework]}
                   </span>
-                  <span className="hidden sm:inline">{s.label}</span>
-                </button>
-                {i < steps.length - 1 && (
-                  <span className="mx-1 text-gray-300 dark:text-gray-600">›</span>
-                )}
-              </div>
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                  {CATEGORY_LABELS[skill.meta.category] || skill.meta.category}
+                </div>
+              </button>
             ))}
-            <div className="flex-1" />
-            <button
-              onClick={() => setShowImport(true)}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 mr-2"
-            >
-              📥 导入
-            </button>
-            {step > 1 && (
-              <button
-                onClick={resetConfig}
-                className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                重置
-              </button>
+            {filteredSkills.length === 0 && (
+              <div className="p-4 text-center text-sm text-gray-400">未找到匹配的技能</div>
             )}
           </div>
-
-          {/* 移动端 Tab 切换 */}
-          <div className="flex md:hidden border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={() => setActiveTab('config')}
-              className={`flex-1 py-2 text-sm font-medium ${
-                activeTab === 'config'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}
-            >
-              配置
-            </button>
-            <button
-              onClick={() => setActiveTab('preview')}
-              className={`flex-1 py-2 text-sm font-medium ${
-                activeTab === 'preview'
-                  ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}
-            >
-              预览
-            </button>
-          </div>
-
-          {/* 配置内容 */}
-          <div
-            className={`flex-1 overflow-auto p-4 ${activeTab !== 'config' ? 'hidden md:block' : ''}`}
-          >
-            {step === 1 && <TemplateSelector value={templateType} onChange={setTemplateType} />}
-
-            {step === 2 && templateType && (
-              <FrameworkSelector
-                value={framework}
-                onChange={setFramework}
-                supported={TEMPLATE_SCHEMAS[templateType].supportedFrameworks}
-              />
-            )}
-
-            {step === 3 && schema && (
-              <ConfigForm
-                fields={schema.fields}
-                values={values}
-                dynamicFields={fields}
-                onValueChange={setFieldValue}
-                onFieldsChange={setFields}
-              />
-            )}
-          </div>
-
-          {/* 底部操作栏 */}
-          {step === 3 && markdown && (
-            <div className="p-3 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-              <button
-                onClick={handleCopy}
-                className="flex-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
-              >
-                {copied ? '已复制 ✓' : '复制'}
-              </button>
-              <button
-                onClick={handleDownload}
-                className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-              >
-                下载 .skill.md
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* 右侧：预览 */}
-        <div
-          className={`flex-1 flex flex-col min-w-0 ${activeTab !== 'preview' ? 'hidden md:flex' : 'flex'}`}
-        >
-          {/* 预览头 */}
+        {/* 右侧：编辑器 */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* 工具栏 */}
           <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              {markdown ? `预览 (${markdown.length} 字符)` : '预览'}
+              {selectedSkillFilename
+                ? `${selectedSkillFilename.split(/[/\\]/).pop()}`
+                : '选择一个技能开始编辑'}
             </span>
+            {markdownContent && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCopy}
+                  className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                >
+                  {copied ? '已复制 ✓' : '复制'}
+                </button>
+                <button
+                  onClick={handleDownload}
+                  className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  下载 .skill.md
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Monaco 编辑器 */}
           <div className="flex-1">
-            {markdown ? (
-              <MonacoEditor value={markdown} readOnly />
+            {loading ? (
+              <div className="flex items-center justify-center h-full text-gray-400">加载中...</div>
+            ) : markdownContent ? (
+              <MonacoEditor
+                value={markdownContent}
+                onChange={setMarkdownContent}
+                readOnly={false}
+              />
             ) : (
               <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-500 text-sm">
                 <div className="text-center">
                   <div className="text-4xl mb-3">🔧</div>
-                  <p>选择模板类型和框架后</p>
-                  <p>这里将实时显示生成的 Skill</p>
+                  <p>从左侧选择一个技能</p>
+                  <p>在此处编辑和导出</p>
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
-
-      <ImportDialog
-        open={showImport}
-        onClose={() => setShowImport(false)}
-        onImport={(parsed: ParsedSkill) => importConfig(parsed)}
-      />
     </Layout>
   )
 }

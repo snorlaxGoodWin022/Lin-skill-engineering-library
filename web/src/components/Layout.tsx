@@ -22,7 +22,6 @@ export default function Layout({ children }: Props) {
     { href: '/', label: '首页', icon: '🏠' },
     { href: '/library', label: '技能库', icon: '📚' },
     { href: '/configurator', label: '配置器', icon: '🔧' },
-    { href: '/editor', label: '编辑器', icon: '✏️' },
   ]
 
   return (

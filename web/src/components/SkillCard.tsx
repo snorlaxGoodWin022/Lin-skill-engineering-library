@@ -3,7 +3,6 @@
 
 import { FRAMEWORK_COLORS, FRAMEWORK_LABELS, CATEGORY_LABELS } from '@/types/skill'
 import type { Skill } from '@/types/skill'
-import { useSkillStore } from '@/store/skillStore'
 import { useRouter } from 'next/navigation'
 
 interface Props {
@@ -12,11 +11,9 @@ interface Props {
 
 export default function SkillCard({ skill }: Props) {
   const router = useRouter()
-  const { setSelectedSkill } = useSkillStore()
 
   const handleClick = () => {
-    setSelectedSkill(skill)
-    router.push(`/editor?skill=${skill.filename}`)
+    router.push(`/skill/${encodeURIComponent(skill.filename)}`)
   }
 
   return (

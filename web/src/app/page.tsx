@@ -47,10 +47,10 @@ export default function HomePage() {
                 浏览技能库
               </Link>
               <Link
-                href="/editor"
+                href="/configurator"
                 className="px-5 md:px-6 py-2.5 md:py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition font-medium text-center"
               >
-                打开编辑器
+                打开配置器
               </Link>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
               {skills.slice(0, 6).map((skill) => (
                 <Link
                   key={skill.filename}
-                  href={`/editor?skill=${skill.filename}`}
+                  href={`/skill/${encodeURIComponent(skill.filename)}`}
                   className="flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition"
                 >
                   <div className="flex items-center gap-2 md:gap-3">
